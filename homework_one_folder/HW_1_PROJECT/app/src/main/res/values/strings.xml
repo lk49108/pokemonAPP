@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">HW_1_PROJECT</string>
+    <string name="counter_initial_value">0</string>
+</resources>
