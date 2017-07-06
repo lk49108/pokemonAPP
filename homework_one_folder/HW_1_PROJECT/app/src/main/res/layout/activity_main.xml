@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/lin_layout"
-        android:text="@string/counter_initial_value"
         android:gravity="center"
         android:textSize="100dp"
         android:textColor="@color/colorBlack"/>

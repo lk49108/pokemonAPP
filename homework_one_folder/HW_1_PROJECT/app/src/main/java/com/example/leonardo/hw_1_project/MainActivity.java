@@ -18,6 +18,8 @@ import android.widget.TextView;
  */
 public class MainActivity extends AppCompatActivity {
 
+    private static int counterCurrentValue;
+
     /**
      * Counter initial text.
      */
@@ -58,14 +60,21 @@ public class MainActivity extends AppCompatActivity {
 
         counter = (TextView) findViewById(R.id.counter);
 
+        counter.setText(Integer.toString(counterCurrentValue));
+        counter.setTextColor( (counterCurrentValue % 2 == 0) ? COUNTER_EVEN_NUMBER_COLOR : COUNTER_ODD_NUMBER_COLOR );
+        if (counterCurrentValue == 0) {
+            counter.setTextColor(Color.BLACK);
+        }
+
+
         resetButton.setOnClickListener((v) -> {
             resetCounter();
         });
 
         incrementButton.setOnClickListener((v) -> {
-            int currentCounterStatus = Integer.parseInt(counter.getText().toString());
-            counter.setText(Integer.toString(++currentCounterStatus));
-            counter.setTextColor( (currentCounterStatus % 2 == 0) ? COUNTER_EVEN_NUMBER_COLOR : COUNTER_ODD_NUMBER_COLOR );
+            counterCurrentValue++;
+            counter.setText(Integer.toString(counterCurrentValue));
+            counter.setTextColor( (counterCurrentValue % 2 == 0) ? COUNTER_EVEN_NUMBER_COLOR : COUNTER_ODD_NUMBER_COLOR );
         });
     }
 
@@ -75,5 +84,6 @@ public class MainActivity extends AppCompatActivity {
     private void resetCounter() {
         counter.setText(COUNTER_INITIAL_TEXT);
         counter.setTextColor(Color.BLACK);
+        counterCurrentValue = 0;
     }
 }
