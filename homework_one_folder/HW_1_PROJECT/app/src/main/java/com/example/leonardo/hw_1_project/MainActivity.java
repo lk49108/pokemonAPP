@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        
         incrementButton = (Button) findViewById(R.id.increment_button);
         resetButton = (Button) findViewById(R.id.reset_button);
 
