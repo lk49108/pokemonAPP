@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.leonardo.hw_1_project.MainActivity">
+
+    <TextView
+        android:id="@+id/counter"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/lin_layout"
+        android:gravity="center"
+        android:textSize="100dp"
+        android:textColor="@color/colorPrimaryDark"/>
+
+    <LinearLayout
+        android:id="@+id/lin_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:weightSum="2">
+
+
+        <Button
+            android:id="@+id/increment_button"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="INCREMENT COUNTER"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            />
+
+        <Button
+            android:id="@+id/reset_button"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="RESET COUNTER"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"/>
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>
