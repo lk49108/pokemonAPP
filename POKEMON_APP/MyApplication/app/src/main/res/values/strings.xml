@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">POKEMON APP</string>
+    <string name="no_pokemons_message_bold">No Pokemons</string>
+    <string name="no_pokemons_message_description">To add some Pokemons,\npress + icon</string>
+    <string name="pokemon_list_activity_title">Pokemon</string>
+    <string name="action_add_pokemon">Add</string>
+    <string name="save_added_pokemon">Save</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="save_changes_dialog">Would you like to save the changes?</string>
+</resources>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.leonardo.pokemonapp.PokemonListActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolBarPokemonList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/AppTheme"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:layout_constraintHorizontal_bias="1">
+    </android.support.v7.widget.Toolbar>
+
+    <include
+        android:id="@+id/empty_pokemon_list_layout"
+        layout="@layout/empty_pokemon_list_activity_layout"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@+id/toolBarPokemonList"
+        android:visibility="gone"
+        android:id="@+id/pokemonListActivityRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </android.support.v7.widget.RecyclerView>
+
+</RelativeLayout>
