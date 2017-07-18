@@ -8,4 +8,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="save_changes_dialog">Would you like to save the changes?</string>
+    <string name="explanation_for_storage_read_permission">Application has to have access to mobile
+        device storage in order to enable you to set pokemon profile picture.</string>
+    <string name="close">Close</string>
+    <string name="chooseBetweenCameraAndStorage">Choose photo:</string>
 </resources>

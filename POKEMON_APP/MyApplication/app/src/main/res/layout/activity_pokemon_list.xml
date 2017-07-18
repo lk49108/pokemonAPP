@@ -23,6 +23,7 @@
         layout="@layout/empty_pokemon_list_activity_layout"/>
 
     <android.support.v7.widget.RecyclerView
+        android:layout_margin="20dp"
         android:layout_below="@+id/toolBarPokemonList"
         android:visibility="gone"
         android:id="@+id/pokemonListActivityRecyclerView"
