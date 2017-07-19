@@ -47,7 +47,7 @@ public class PokemonListActivity extends AppCompatActivity {
 
         configureRecyclerViewBehaviour();
         if(savedInstanceState != null) {
-            Pokemon[] pokemons = (Pokemon[]) savedInstanceState.getParcelableArray(SAVE_INSTANCE_STATE_EXISTING_POKEMONS_KEY);
+            Pokemon[] pokemons = (Pokemon[])savedInstanceState.getParcelableArray(SAVE_INSTANCE_STATE_EXISTING_POKEMONS_KEY);
             pokemonListAdapter.addAll(pokemons);
             checkForEmptyList();
         }

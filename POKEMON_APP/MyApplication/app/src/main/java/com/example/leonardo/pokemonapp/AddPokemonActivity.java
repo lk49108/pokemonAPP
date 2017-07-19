@@ -43,7 +43,6 @@ import butterknife.OnTextChanged;
 public class AddPokemonActivity extends AppCompatActivity {
 
     private String fileImagePath;
-    private boolean permissionStorageGranted = false;
 
     private Uri pokemonImageUri;
 
@@ -111,16 +110,15 @@ public class AddPokemonActivity extends AppCompatActivity {
     @OnClick(R.id.add_pokemon_activity_floating_button)
     void setPokemonImage() {
         checkForPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if(!permissionStorageGranted) {
-            return;
-        }
+    }
 
+    private void showDialogChooser() {
         final CharSequence[] options = { "Take photo", "Choose from gallery", "Cancel" };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(chooseString)
                 .setItems(options, (dialogInterface, item) -> {
-                   String storageState = Environment.getExternalStorageState();
+                    String storageState = Environment.getExternalStorageState();
                     if(!Environment.MEDIA_MOUNTED.equals(storageState)) {
                         dialogInterface.cancel();
                         Toast.makeText(AddPokemonActivity.this, "Storage not mounted", Toast.LENGTH_LONG).show();
@@ -139,13 +137,26 @@ public class AddPokemonActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch(requestCode) {
+            case PERMISSION_STORAGE_REQUEST_CODE:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    showDialogChooser();
+                } else {
+
+                }
+                return;
+        }
+    }
+
     private void checkForPermission(String permission) {
         if(ContextCompat.checkSelfPermission(this, permission)
                 != PackageManager.PERMISSION_GRANTED) {
 
             if(ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
 
-                showExplanation(permission);
+                showExplanationAndReqestPermission(permission);
 
             } else {
 
@@ -154,8 +165,36 @@ public class AddPokemonActivity extends AppCompatActivity {
             }
         } else {
 
-            permissionStorageGranted = true;
+            showDialogChooser();
 
+        }
+    }
+
+    private void requestPermission(String permissionToBeGranted) {
+        ActivityCompat.requestPermissions(this, new String[] {permissionToBeGranted},
+                PERMISSION_STORAGE_REQUEST_CODE
+        );
+    }
+
+    private void showExplanationAndReqestPermission(String permissionGroupToBeExplainedToTheUser) {
+        switch(permissionGroupToBeExplainedToTheUser) {
+            case android.Manifest.permission.WRITE_EXTERNAL_STORAGE:
+
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+                dialogBuilder.setMessage(R.string.explanation_for_storage_read_permission)
+                        .setPositiveButton(R.string.close, (dialogInterface, i) -> {
+
+                            requestPermission(permissionGroupToBeExplainedToTheUser);
+                            dialogInterface.cancel();
+
+                        });
+
+                AlertDialog dialog = dialogBuilder.create();
+                dialog.show();
+
+                break;
+            default:
+                Toast.makeText(this, "Nepostojeci explanation", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -197,45 +236,13 @@ public class AddPokemonActivity extends AppCompatActivity {
     }
 
     private void getImageFromGallery() {
-        if(Build.VERSION.SDK_INT < 19) {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("image/*");
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+
+        if(intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(intent, SET_POKEMON_PICTURE_FROM_STORAGE_REQUEST_CODE);
         } else {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("image/*");
-            startActivityForResult(intent, SET_POKEMON_PICTURE_FROM_STORAGE_REQUEST_CODE);
-        }
-    }
-
-    private void requestPermission(String permissionToBeGranted) {
-        ActivityCompat.requestPermissions(this,
-                new String[] {permissionToBeGranted},
-                PERMISSION_STORAGE_REQUEST_CODE
-                );
-    }
-
-    private void showExplanation(String permissionGroupToBeExplainedToTheUser) {
-        switch(permissionGroupToBeExplainedToTheUser) {
-            case android.Manifest.permission.WRITE_EXTERNAL_STORAGE:
-
-                AlertDialog.Builder dialoBuilder = new AlertDialog.Builder(this);
-                dialoBuilder.setMessage(R.string.explanation_for_storage_read_permission)
-                        .setPositiveButton(R.string.close, (dialogInterface, i) -> {
-
-                            requestPermission(permissionGroupToBeExplainedToTheUser);
-                            dialogInterface.cancel();
-
-                        });
-
-                AlertDialog dialog = dialoBuilder.create();
-                dialog.show();
-
-                break;
-            default:
-                Toast.makeText(this, "Nastala greska prilikom objasnjavanja permissiona", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No app which would allow yout to choose image from gallery", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -318,19 +325,6 @@ public class AddPokemonActivity extends AppCompatActivity {
         setResult(RESULT_CANCELED, resultIntent);
         finish();
         return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch(requestCode) {
-            case PERMISSION_STORAGE_REQUEST_CODE:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    permissionStorageGranted = true;
-                } else {
-
-                }
-                return;
-        }
     }
 
     @Override
