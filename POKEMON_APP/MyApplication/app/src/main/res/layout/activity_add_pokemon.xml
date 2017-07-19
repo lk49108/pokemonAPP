@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context="com.example.leonardo.pokemonapp.AddPokemonActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolBarAddPokemon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="?attr/actionBarSize"
+        app:theme="@style/AppTheme"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:layout_constraintHorizontal_bias="1">
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/add_pokemon_activity_pokemon_picture"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.4"
+            android:src="@drawable/ic_person"
+            android:background="@color/defaultImageBackgroundColor"
+            />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.6"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <include
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    layout="@layout/add_new_pokemon_option"
+                    android:id="@+id/add_pokemon_activity_pokemon_name" />
+                <include
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    layout="@layout/add_new_pokemon_option"
+                    android:id="@+id/add_pokemon_activity_pokemon_height"/>
+                <include
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    layout="@layout/add_new_pokemon_option"
+                    android:id="@+id/add_pokemon_activity_pokemon_weight"/>
+                <include
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    layout="@layout/add_new_pokemon_option"
+                    android:id="@+id/add_pokemon_activity_pokemon_category"/>
+                <include
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    layout="@layout/add_new_pokemon_option"
+                    android:id="@+id/add_pokemon_activity_pokemon_abilities"/>
+                <include
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    layout="@layout/add_new_pokemon_option"
+                    android:id="@+id/add_pokemon_activity_pokemon_description"/>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <Button
+            android:id="@+id/add_pokemon_activity_pokemon_save_button"
+            android:textAllCaps="false"
+            android:textSize="21sp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorWhite"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="center"
+            android:text="@string/save_added_pokemon"/>
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_pokemon_activity_floating_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="normal"
+        android:src="@drawable/ic_add"
+        app:layout_anchor="@id/add_pokemon_activity_pokemon_picture"
+        app:layout_anchorGravity="bottom|right"
+        android:backgroundTint="@color/colorPrimary"/>
+
+</android.support.design.widget.CoordinatorLayout>
