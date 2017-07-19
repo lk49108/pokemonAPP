@@ -27,6 +27,7 @@
         android:orientation="vertical">
 
         <ImageView
+            android:scaleType="centerInside"
             android:id="@+id/add_pokemon_activity_pokemon_picture"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -107,6 +108,6 @@
         android:src="@drawable/ic_add"
         app:layout_anchor="@id/add_pokemon_activity_pokemon_picture"
         app:layout_anchorGravity="bottom|right"
-        android:backgroundTint="@color/colorPrimary"/>
+        style="@style/FABTint"/>
 
 </android.support.design.widget.CoordinatorLayout>

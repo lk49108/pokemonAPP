@@ -8,4 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/colorWhite</item>
     </style>
+
+    <style name="FABTint" parent="Widget.Design.FloatingActionButton">
+        <item name="backgroundTint">@color/colorPrimary</item>
+    </style>
 </resources>
