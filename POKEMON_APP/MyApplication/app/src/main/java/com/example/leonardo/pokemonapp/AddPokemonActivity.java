@@ -42,14 +42,11 @@ import butterknife.OnTextChanged;
 
 public class AddPokemonActivity extends AppCompatActivity {
 
-    private String fileImagePath;
-
     private Uri pokemonImageUri;
 
     private static final int PERMISSION_STORAGE_REQUEST_CODE = 22;
     private static final int SET_POKEMON_PICTURE_FROM_STORAGE_REQUEST_CODE = 40;
     private static final int SET_POKEMON_PICTURE_WITH_CAMERA_REQUEST_CODE = 41;
-
 
     public static final String POKEMON_KEY = "pokemon.key";
 
@@ -211,27 +208,30 @@ public class AddPokemonActivity extends AppCompatActivity {
 
             if(photoFile != null) {
                 Uri photoUri = FileProvider.getUriForFile(this,
-                    "com.pokemon.android.fileprovider",
-                    photoFile);
+                        "com.pokemon.android.fileprovider",
+                        photoFile);
                 pokemonImageUri = photoUri;
 
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(takePictureIntent, SET_POKEMON_PICTURE_WITH_CAMERA_REQUEST_CODE);
+            } else {
+                Toast.makeText(this, "Can not make photo file", Toast.LENGTH_LONG).show();
             }
+
         }
     }
 
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,
-                ".jpg",
-                storageDir
-        );
+        String imageFileName = "JPEG_" + timeStamp + "_pokemon.jpg";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File applicationDirectory = new File(storageDir, "/pokemonApp");
+        if(!applicationDirectory.exists()) {
+            applicationDirectory.mkdir();
+        }
 
-        fileImagePath = image.getAbsolutePath();
+        File image = new File(applicationDirectory, imageFileName);
+
         return image;
     }
 
@@ -284,7 +284,7 @@ public class AddPokemonActivity extends AppCompatActivity {
 
         Intent resultIntent = createResultPokemonIntent();
         setResult(RESULT_OK, resultIntent);
-        AddPokemonActivity.this.finish();
+        finish();
     }
 
     private Intent createResultPokemonIntent() {
@@ -335,7 +335,7 @@ public class AddPokemonActivity extends AppCompatActivity {
             if(requestCode == SET_POKEMON_PICTURE_FROM_STORAGE_REQUEST_CODE && data != null) {
                 pokemonImageUri = data.getData();
             } else if (requestCode == SET_POKEMON_PICTURE_WITH_CAMERA_REQUEST_CODE) {
-                pokemonImageUri = Uri.fromFile(new File(fileImagePath));
+                //pokemonImageUri = Uri.fromFile(new File(fileImagePath));
                 //makePhotoAvailableInGallery();
             }
 
@@ -403,12 +403,8 @@ public class AddPokemonActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_BACK) {
-            onSupportNavigateUp();
-            return true;
-        }
-
-        return super.onKeyDown(keyCode, event);
+    public void onBackPressed() {
+        onSupportNavigateUp();
     }
+
 }
