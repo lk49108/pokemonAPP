@@ -1,6 +1,7 @@
 package com.example.leonardo.pokemonapp;
 
 import android.app.Application;
+import android.support.v4.app.FragmentManager;
 
 /**
  * Created by leonardo on 14/07/17.
