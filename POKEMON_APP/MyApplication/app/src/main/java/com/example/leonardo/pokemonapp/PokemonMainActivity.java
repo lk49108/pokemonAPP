@@ -1,14 +1,13 @@
 package com.example.leonardo.pokemonapp;
 
-import android.content.res.Configuration;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,12 +17,18 @@ import android.widget.Toast;
 import com.example.leonardo.pokemonapp.fragmentHandler.FragmentMainActivityHandlerHorizontalTablet;
 import com.example.leonardo.pokemonapp.fragmentHandler.FragmentMainActivityHandlerInt;
 import com.example.leonardo.pokemonapp.fragmentHandler.FragmentMainActivityHandlerRegular;
+import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PokemonMainActivity extends AppCompatActivity implements PokemonListFragment.PokemonListFragmentListener, PokemonAddFragment.PokemonAddFragmentListener {
+
+    private DrawerLayout drawerLayout;
+    private RecyclerView drawerList;
+    private ActionBarDrawerToggle drawerToggle;
+    private FrameLayout drawerFragmentContainer;
 
     @BindString(R.string.pokemon_list_activity_title)
     String title;
@@ -45,8 +50,16 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
 
         ButterKnife.bind(this);
 
+        /*
+        drawerLayout  = (DrawerLayout) LayoutInflater.from(this).inflate(R.layout.drawer_layout, null, false);
+        drawerList = (RecyclerView) drawerLayout.findViewById(R.id.drawer_layout_left_drawer);
+        drawerFragmentContainer = (FrameLayout) drawerLayout.findViewById(R.id.drawer_layout_fragment_container);
+        initializeDrawerBehaviour();
+        */
+
         setSupportActionBar(pokemonMainActivityToolbar);
         getSupportActionBar().setTitle(title);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if(pokemonAddDetailFragmentContainer != null) {
             fragmentHandler = new FragmentMainActivityHandlerHorizontalTablet(this);
@@ -63,6 +76,62 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
                 fragmentHandler.fromOtherConfigurationInitialization();
             }
         }
+    }
+
+/*
+    private void initializeDrawerBehaviour() {
+
+        drawerList.setAdapter(new DrawerListAdapter(this));
+        drawerList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        drawerToggle = new ActionBarDrawerToggle(
+                this,
+                drawerLayout,
+                R.string.drawer_open,
+                R.string.drawer_close) {
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                invalidateOptionsMenu();
+                getSupportActionBar().setTitle(title);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+                getSupportActionBar().setTitle("drawer");
+            }
+        };
+
+        drawerLayout.addDrawerListener(drawerToggle);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(drawerFragmentContainer.getId(), DrawerFragment.newInstance()).commit();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+*/
+
+    public void logOut() {
+        Toast.makeText(this, "log out...", Toast.LENGTH_LONG).show();
     }
 
     public boolean verticalOrientation() {
@@ -105,6 +174,11 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+       //if(drawerToggle.onOptionsItemSelected(item)) {
+         //  Toast.makeText(this, "sdfasf", Toast.LENGTH_SHORT).show();
+           // return true;
+        //}
 
         switch (item.getItemId()){
             case R.id.action_add_pokemon:

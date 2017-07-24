@@ -1,16 +1,18 @@
 package com.example.leonardo.pokemonapp;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
+
+import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
+import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 
 import java.util.List;
 
@@ -67,9 +69,17 @@ public class PokemonListFragment extends Fragment {
         if(savedInstanceState != null) {
             Pokemon[] pokemons = (Pokemon[])savedInstanceState.getParcelableArray(SAVE_INSTANCE_STATE_EXISTING_POKEMONS_KEY);
             pokemonListAdapter.addAll(pokemons);
+        } else {
+            //getPokemonsFromService();
         }
 
         switchFragmentLayout();
+    }
+
+    private void getPokemonsFromService() {
+        Pokemon[] pokemons = NetworkExecutor.getInstance().getAllPokemons();
+
+        pokemonListAdapter.addAll(pokemons);
     }
 
     @Override

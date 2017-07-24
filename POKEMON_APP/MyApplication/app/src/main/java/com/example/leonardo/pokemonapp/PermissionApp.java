@@ -21,4 +21,5 @@ public class PermissionApp extends Application {
     public static PermissionApp getPermissionApp() {
         return permissionApp;
     }
+
 }

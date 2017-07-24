@@ -1,12 +1,10 @@
 package com.example.leonardo.pokemonapp.fragmentHandler;
 
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 
-import com.example.leonardo.pokemonapp.Pokemon;
+import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.PokemonAddFragment;
 import com.example.leonardo.pokemonapp.PokemonDetailsFragment;
 import com.example.leonardo.pokemonapp.PokemonListFragment;
