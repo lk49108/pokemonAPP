@@ -103,7 +103,7 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
 
             @Override
             public void onFailure(String message) {
-                Toast.makeText(RegisterActivity.this, "Error when trying to log in", Toast.LENGTH_LONG).show();
+                Toast.makeText(RegisterActivity.this, "Error when trying to sign up", Toast.LENGTH_LONG).show();
             }
         });
 

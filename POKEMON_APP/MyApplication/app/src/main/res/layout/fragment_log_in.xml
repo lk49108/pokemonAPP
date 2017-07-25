@@ -7,7 +7,7 @@
 
     <ScrollView
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/fragment_log_in_log_in_button"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_width="0dp"
@@ -15,7 +15,7 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/fragment_log_in_pokemon_logo"
@@ -60,8 +60,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="@string/emailHint"
-                    android:text="leonardo2@gmail.com"/>
+                    android:hint="@string/emailHint" />
 
             </LinearLayout>
 
@@ -90,37 +89,36 @@
                     android:layout_weight="1"
                     android:hint="@string/passwordHint"
                     android:drawableEnd="@drawable/ic_visibility_off"
-                    android:inputType="textPassword"
-                    android:text="leonardo2"/>
+                    android:inputType="textPassword" />
 
             </LinearLayout>
-
 
         </android.support.constraint.ConstraintLayout>
 
     </ScrollView>
 
-        <Button
-            android:id="@+id/fragment_log_in_sign_up_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/signUpString"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:textColor="@color/colorPrimary"
-            android:background="@color/colorWhite" />
+
+    <Button
+        android:id="@+id/fragment_log_in_sign_up_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/signUpString"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textColor="@color/colorPrimary"
+        android:background="@color/colorWhite" />
 
 
-        <Button
-            android:id="@+id/fragment_log_in_log_in_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/logInString"
-            app:layout_constraintBottom_toTopOf="@+id/fragment_log_in_sign_up_button"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:textColor="@color/colorWhite"
-            android:background="@color/colorPrimary" />
+    <Button
+        android:id="@+id/fragment_log_in_log_in_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/logInString"
+        app:layout_constraintBottom_toTopOf="@+id/fragment_log_in_sign_up_button"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textColor="@color/colorWhite"
+        android:background="@color/colorPrimary" />
 
 </android.support.constraint.ConstraintLayout>

@@ -78,6 +78,11 @@ public class SignUpFragment extends Fragment {
             return false;
         }
 
+        if(password.length() < 8) {
+            errorMessage = "Password should be at least 8 characters long";
+            return false;
+        }
+
         if (!password.equals(confPassword)) {
             errorMessage = "Passwords do not match";
             return false;
