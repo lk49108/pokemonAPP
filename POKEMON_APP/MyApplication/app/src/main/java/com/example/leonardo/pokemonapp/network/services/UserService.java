@@ -16,10 +16,10 @@ import retrofit2.http.POST;
 
 public interface UserService {
 
-    @POST("api/v1/users")
+    @POST("/api/v1/users")
     Call<User> createUser(@Body User user);
 
-    @POST("api/v1/users/login")
+    @POST("/api/v1/users/login")
     Call<User> loginUser(@Body User user);
 
     @DELETE("/api/v1/users/logout")

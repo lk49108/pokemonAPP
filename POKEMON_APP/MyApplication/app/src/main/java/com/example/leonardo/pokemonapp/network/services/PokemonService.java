@@ -16,10 +16,10 @@ import retrofit2.http.POST;
 
 public interface PokemonService {
 
-    @GET("api/v1/pokemons")
+    @GET("/api/v1/pokemons")
     Call<Pokemon[]> getAllPokemons(@Header("Authorization") String authHeader);
 
-    @POST("api/v1/pokemons")
+    @POST("/api/v1/pokemons")
     Call<Pokemon> createPokemon(@Body Pokemon pokemon, @Header("Authorization") String authHeader);
 
 }

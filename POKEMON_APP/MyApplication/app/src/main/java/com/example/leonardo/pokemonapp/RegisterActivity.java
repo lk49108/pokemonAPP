@@ -34,7 +34,6 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
 
         if(UserUtil.loggedIn()) {
             Intent intent = new Intent(this, PokemonMainActivity.class);
-            intent.putExtra("loggedInUser", UserUtil.getLoggedInUser());
             startActivity(intent);
             finish();
         }

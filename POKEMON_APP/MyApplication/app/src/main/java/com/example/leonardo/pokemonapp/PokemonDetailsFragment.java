@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;
@@ -75,10 +76,11 @@ public class PokemonDetailsFragment extends Fragment {
             pokemonDescriptionContent.setText(pokemon.getDescription());
 
             Uri pokemonImageSource = pokemon.getImageSource();
-            if(pokemonImageSource != null && PokemonResourcesUtil.imageFileExists(pokemonImageSource, getActivity())) {
+            if(pokemonImageSource != null && (PokemonResourcesUtil.imageFileExists(pokemonImageSource, getActivity()) || pokemonImageSource.toString().startsWith("http"))) {
                 Picasso.with(getActivity()).load(pokemonImageSource).into(pokemonImageContent);
+            } else {
+                Picasso.with(getActivity()).load(R.drawable.ic_person).into(pokemonImageContent);
             }
-
         }
     }
 

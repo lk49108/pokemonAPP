@@ -58,7 +58,8 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
         holder.pokemonNameTextView.setText(pokemon.getName());
 
         try {
-            if(PokemonResourcesUtil.imageFileExists(pokemon.getImageSource(), fragment.getActivity())) {
+            if(PokemonResourcesUtil.imageFileExists(pokemon.getImageSource(), fragment.getActivity()) ||
+                pokemon.getImageSource().toString().startsWith("http")) {
                 Picasso.with(fragment.getActivity()).load(pokemons.get(position).getImageSource()).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);
             } else {
                 Picasso.with(fragment.getActivity()).load(R.drawable.ic_person).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);

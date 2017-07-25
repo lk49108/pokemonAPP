@@ -26,7 +26,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public class ServiceCreator {
 
-    private static final String API_ENDPOINT = "https://pokeapi.infinum.co/";
+    public static final String API_ENDPOINT = "https://pokeapi.infinum.co";
 
     private static Retrofit restAdapter;
 

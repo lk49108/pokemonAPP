@@ -3,6 +3,7 @@ package com.example.leonardo.pokemonapp.network.executor;
 import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.LogInFragment_ViewBinding;
+import com.example.leonardo.pokemonapp.PermissionApp;
 import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.network.resources.User;

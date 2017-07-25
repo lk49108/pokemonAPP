@@ -60,7 +60,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="@string/emailHint"/>
+                    android:hint="@string/emailHint"
+                    android:text="leonardo2@gmail.com"/>
 
             </LinearLayout>
 
@@ -89,7 +90,8 @@
                     android:layout_weight="1"
                     android:hint="@string/passwordHint"
                     android:drawableEnd="@drawable/ic_visibility_off"
-                    android:inputType="textPassword"/>
+                    android:inputType="textPassword"
+                    android:text="leonardo2"/>
 
             </LinearLayout>
 

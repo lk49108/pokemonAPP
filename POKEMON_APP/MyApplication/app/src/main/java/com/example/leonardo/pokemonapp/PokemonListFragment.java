@@ -28,6 +28,9 @@ import butterknife.ButterKnife;
 
 public class PokemonListFragment extends Fragment {
 
+    private int i;
+    private boolean successedToDownloadPokemons;
+
     private static final String SAVE_INSTANCE_STATE_EXISTING_POKEMONS_KEY = "pokemons.list.fragment.save.instance.state.key";
 
     public interface PokemonListFragmentListener {
@@ -52,6 +55,18 @@ public class PokemonListFragment extends Fragment {
         return new PokemonListFragment();
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if(pokemonListAdapter == null) {
+            pokemonListAdapter = new PokemonListAdapter(this);
+        }
+        if(savedInstanceState == null) {
+            getPokemonsFromService();
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -72,26 +87,40 @@ public class PokemonListFragment extends Fragment {
         if(savedInstanceState != null) {
             Pokemon[] pokemons = (Pokemon[])savedInstanceState.getParcelableArray(SAVE_INSTANCE_STATE_EXISTING_POKEMONS_KEY);
             pokemonListAdapter.addAll(pokemons);
-        } else {
-            getPokemonsFromService();
         }
 
         switchFragmentLayout();
     }
 
     private void getPokemonsFromService() {
-        NetworkExecutor.getInstance().getAllPokemons(new CallbackInt() {
-            @Override
-            public void onSuccess(Object object) {
-                Pokemon[] pokemons = (Pokemon[]) object;
-                pokemonListAdapter.addAll(pokemons);
-            }
 
-            @Override
-            public void onFailure(String message) {
-                Toast.makeText(getActivity(), "Failed to download pokemons", Toast.LENGTH_LONG).show();
-            }
-        });
+        if(!UserUtil.internetConnectionActive()) {
+            Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        for(i = 0; i < 3; i++) {
+            NetworkExecutor.getInstance().getAllPokemons(new CallbackInt() {
+                @Override
+                public void onSuccess(Object object) {
+                    if(successedToDownloadPokemons) {
+                        return;
+                    }
+                    successedToDownloadPokemons = true;
+                    Pokemon[] pokemons = (Pokemon[]) object;
+                    pokemonListAdapter.addAll(pokemons);
+                    switchFragmentLayout();
+                }
+
+                @Override
+                public void onFailure(String message) {
+                    if(i == 2) {
+                        Toast.makeText(getActivity(), "Failed to download pokemons", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
+
 
     }
 
@@ -106,9 +135,6 @@ public class PokemonListFragment extends Fragment {
     }
 
     private void configureRecyclerViewBehaviour() {
-        if(pokemonListAdapter == null) {
-            pokemonListAdapter = new PokemonListAdapter(this);
-        }
         recyclerView.setAdapter(pokemonListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
     }
