@@ -72,8 +72,10 @@ public class SignUpFragment extends Fragment {
     private boolean checkDataValidityLocaly() {
         final String email = fragmentSignUpEmailEditText.getText().toString();
         final String userName = fragmentSignUpUsernameEditText.getText().toString();
+        final String password = fragmentSignUpPasswordEditText.getText().toString();
+        final String confPassword = fragmentSignUpPasswordConfirmationEditText.getText().toString();
 
-        if(email.isEmpty() || userName.isEmpty()) {
+        if(email.isEmpty() || userName.isEmpty() || password.isEmpty() || confPassword.isEmpty()) {
             errorMessage = "No empty fields allowed";
             return false;
         }
@@ -82,10 +84,7 @@ public class SignUpFragment extends Fragment {
             errorMessage = "Email is not valid";
             return false;
         }
-
-        final String password = fragmentSignUpPasswordEditText.getText().toString();
-        final String confPassword = fragmentSignUpPasswordConfirmationEditText.getText().toString();
-
+        
         if(password.isEmpty()) {
             errorMessage = "Password can not be mepty";
             return false;
