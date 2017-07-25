@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.leonardo.pokemonapp.PokemonListActivity">
+    tools:context="com.example.leonardo.pokemonapp.PokemonMainActivity">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolBarPokemonList"
+        android:id="@+id/activity_pokemon_main_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
@@ -18,17 +18,25 @@
         app:layout_constraintHorizontal_bias="1">
     </android.support.v7.widget.Toolbar>
 
-    <include
-        android:id="@+id/empty_pokemon_list_layout"
-        layout="@layout/empty_pokemon_list_activity_layout"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:layout_margin="20dp"
-        android:layout_below="@+id/toolBarPokemonList"
-        android:visibility="gone"
-        android:id="@+id/pokemonListActivityRecyclerView"
+    <LinearLayout
+        android:layout_below="@+id/activity_pokemon_main_toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </android.support.v7.widget.RecyclerView>
+
+        <FrameLayout
+            android:id="@+id/activity_pokemon_main_fragment_container_main"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/activity_pokemon_main_fragment_container_pokemon_add_details"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+        </FrameLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>
