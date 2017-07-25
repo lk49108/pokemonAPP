@@ -70,6 +70,19 @@ public class SignUpFragment extends Fragment {
     }
 
     private boolean checkDataValidityLocaly() {
+        final String email = fragmentSignUpEmailEditText.getText().toString();
+        final String userName = fragmentSignUpUsernameEditText.getText().toString();
+
+        if(email.isEmpty() || userName.isEmpty()) {
+            errorMessage = "No empty fields allowed";
+            return false;
+        }
+
+        if(!UserUtil.validEmail(email)) {
+            errorMessage = "Email is not valid";
+            return false;
+        }
+
         final String password = fragmentSignUpPasswordEditText.getText().toString();
         final String confPassword = fragmentSignUpPasswordConfirmationEditText.getText().toString();
 
@@ -85,19 +98,6 @@ public class SignUpFragment extends Fragment {
 
         if (!password.equals(confPassword)) {
             errorMessage = "Passwords do not match";
-            return false;
-        }
-
-        final String email = fragmentSignUpEmailEditText.getText().toString();
-        final String userName = fragmentSignUpUsernameEditText.getText().toString();
-
-        if(email.isEmpty() || userName.isEmpty()) {
-            errorMessage = "No empty fields allowed";
-            return false;
-        }
-
-        if(!UserUtil.validEmail(email)) {
-            errorMessage = "Email is not valid";
             return false;
         }
 
