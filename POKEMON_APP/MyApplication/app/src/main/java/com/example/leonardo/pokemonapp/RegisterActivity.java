@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
 import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
 import com.example.leonardo.pokemonapp.network.resources.User;
 import com.example.leonardo.pokemonapp.util.UserUtil;
@@ -66,16 +67,20 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
 
     @Override
     public void logIn(User user) {
-        User logginedUser = NetworkExecutor.getInstance().logIn(user);
+        NetworkExecutor.getInstance().logIn(user, new CallbackInt() {
+            @Override
+            public void onSuccess(Object object) {
+                Intent intent = new Intent(RegisterActivity.this, PokemonMainActivity.class);
+                startActivity(intent);
+                finish();
+            }
 
-        if(logginedUser == null) {
-            Toast.makeText(this, "Error when trying to log in", Toast.LENGTH_LONG).show();
-        } else {
-            Intent intent = new Intent(this, PokemonMainActivity.class);
-            //intent.putExtra("loggedInUser", user);
-            startActivity(intent);
-            finish();
-        }
+            @Override
+            public void onFailure(String message) {
+                Toast.makeText(RegisterActivity.this, "Error when trying to log in", Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
     @Override
@@ -89,16 +94,20 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
 
     @Override
     public void signUp(User user) {
-        User createdUser = NetworkExecutor.getInstance().signUp(user);
+        NetworkExecutor.getInstance().signUp(user, new CallbackInt() {
+            @Override
+            public void onSuccess(Object object) {
+                Intent intent = new Intent(RegisterActivity.this, PokemonMainActivity.class);
+                startActivity(intent);
+                finish();
+            }
 
-        if(createdUser == null) {
-            Toast.makeText(this, "Error when trying to create user", Toast.LENGTH_LONG).show();
-        } else {
-            Intent intent = new Intent(this, PokemonMainActivity.class);
-           // intent.putExtra("loggedInUser", user);
-            startActivity(intent);
-            finish();
-        }
+            @Override
+            public void onFailure(String message) {
+                Toast.makeText(RegisterActivity.this, "Error when trying to log in", Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
     @Override

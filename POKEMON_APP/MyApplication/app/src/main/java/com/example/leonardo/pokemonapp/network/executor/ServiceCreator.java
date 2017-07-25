@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.ResourceCursorAdapter;
 import android.util.Log;
 
+import com.example.leonardo.pokemonapp.network.adapters.UriAdapter;
+import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.network.resources.User;
 import com.example.leonardo.pokemonapp.network.services.PokemonService;
 import com.example.leonardo.pokemonapp.network.services.UserService;
@@ -60,9 +62,11 @@ public class ServiceCreator {
 
         JsonAdapter.Factory jsonApiAdapterFactory =  ResourceAdapterFactory.builder()
                 .add(User.class)
+                .add(Pokemon.class)
                 .build();
 
         final Moshi moshi = new Moshi.Builder()
+                .add(new UriAdapter())
                 .add(jsonApiAdapterFactory)
                 .build();
 

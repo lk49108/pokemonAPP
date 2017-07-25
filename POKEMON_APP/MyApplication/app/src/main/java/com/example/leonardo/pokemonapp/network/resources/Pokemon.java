@@ -7,12 +7,13 @@ import android.os.Parcelable;
 import com.squareup.moshi.Json;
 
 import moe.banana.jsonapi2.JsonApi;
+import moe.banana.jsonapi2.Resource;
 
 /**
  * Created by leonardo on 12/07/17.
  */
 @JsonApi(type = "pokemons")
-public class Pokemon implements Parcelable {
+public class Pokemon extends Resource implements Parcelable {
 
     @Json(name = "image-url")
     private Uri imageSource;
@@ -34,6 +35,9 @@ public class Pokemon implements Parcelable {
 
     @Json(name = "gender")
     private String abilities;
+
+    public Pokemon() {
+    }
 
     public Uri getImageSource() {
         return imageSource;

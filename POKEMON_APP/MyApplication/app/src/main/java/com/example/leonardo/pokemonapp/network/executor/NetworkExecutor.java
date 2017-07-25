@@ -3,6 +3,7 @@ package com.example.leonardo.pokemonapp.network.executor;
 import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.LogInFragment_ViewBinding;
+import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.network.resources.User;
 import com.example.leonardo.pokemonapp.network.services.PokemonService;
@@ -27,8 +28,6 @@ public class NetworkExecutor {
 
     private static Call<?> pendingCall;
 
-    Object responseValue;
-
     public static NetworkExecutor getInstance() {
         if(networkExecutor == null) {
             networkExecutor = new NetworkExecutor();
@@ -43,7 +42,13 @@ public class NetworkExecutor {
         }
     }
 
-    public User signUp(User user) {
+    private String getAuthenticationString() {
+        final String authToken = UserUtil.getLoggedInUser().getAuthanticationToken();
+        final String email = UserUtil.getLoggedInUser().getEmail();
+        return "Token token=" + authToken + ", email=" + email;
+    }
+
+    public void signUp(User user, CallbackInt callBack) {
 
         UserService userService = ServiceCreator.getUserService();
 
@@ -57,24 +62,23 @@ public class NetworkExecutor {
                     User responseUser = response.body();
                     UserUtil.logInUser(responseUser);
 
-                    responseValue = responseUser;
+                    callBack.onSuccess((User) responseUser);
                 } else {
-                    responseValue = null;
+                    callBack.onFailure("Response was not valid.");
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 if(!call.isCanceled()) {
-                    responseValue = null;
+                    callBack.onFailure("Failure");
                 }
             }
         });
 
-        return (User)responseValue;
     }
 
-    public User logIn(User user) {
+    public void logIn(User user, CallbackInt callBack) {
         UserService userService = ServiceCreator.getUserService();
 
         Call<User> call = userService.loginUser(user);
@@ -87,103 +91,92 @@ public class NetworkExecutor {
                     User responseUser = response.body();
                     UserUtil.logInUser(responseUser);
 
-                    responseValue = responseUser;
+                    callBack.onSuccess((User) responseUser);
                 } else {
-                    responseValue = null;
+                    callBack.onFailure("Response was not valid.");
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                if(!call.isCanceled()) {
-                    responseValue = null;
-                }
+                callBack.onFailure("Failure");
             }
         });
 
-        return (User)responseValue;
     }
 
-    public boolean logOut() {
+    public void logOut(CallbackInt callBack) {
         UserService userService = ServiceCreator.getUserService();
 
-        final String authToken = UserUtil.getLoggedInUser().getAuthanticationToken();
-        final String email = UserUtil.getLoggedInUser().getEmail();
-        final String authentication = "Token token=" + authToken + ", email=" + email;
-
-        Call<Void> call = userService.logoutUser(authentication);
+        Call<Void> call = userService.logoutUser(getAuthenticationString());
         pendingCall = call;
 
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if(response.isSuccessful()) {
-                    responseValue = true;
+                    callBack.onSuccess(null);
                 } else {
-                    responseValue = false;
+                    callBack.onFailure("Response was not valid.");
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                responseValue = false;
+                callBack.onFailure("Failure");
             }
         });
 
-        return (Boolean)responseValue;
     }
 
-    public Pokemon[] getAllPokemons() {
+    public void getAllPokemons(CallbackInt callBack) {
         PokemonService pokeService = ServiceCreator.getPokemonService();
 
-        Call<Pokemon[]> call = pokeService.getAllPokemons();
+
+        Call<Pokemon[]> call = pokeService.getAllPokemons(getAuthenticationString());
         pendingCall = call;
 
         call.enqueue(new Callback<Pokemon[]>() {
             @Override
             public void onResponse(Call<Pokemon[]> call, Response<Pokemon[]> response) {
                 if(response.isSuccessful()) {
-                    responseValue = response.body();
+                    callBack.onSuccess(response.body());
                 } else {
-                    responseValue = null;
+                    callBack.onFailure("Response was not valid.");
                 }
             }
 
             @Override
             public void onFailure(Call<Pokemon[]> call, Throwable t) {
-                if(!call.isCanceled()) {
-                    responseValue = null;
-                }
+                callBack.onFailure("Failure");
             }
         });
 
-        return (Pokemon[]) responseValue;
     }
 
-    public Pokemon createPokemon(Pokemon pokemon) {
+    public void createPokemon(Pokemon pokemon, CallbackInt callBack) {
         PokemonService pokeService = ServiceCreator.getPokemonService();
 
-        Call<Pokemon> call = pokeService.createPokemon(pokemon);
+        Call<Pokemon> call = pokeService.createPokemon(pokemon, getAuthenticationString());
         pendingCall = call;
 
         call.enqueue(new Callback<Pokemon>() {
             @Override
             public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
                 if(response.isSuccessful()) {
-                    responseValue = response.body();
+                    callBack.onSuccess(response.body());
                 } else {
-                    responseValue = null;
+                    callBack.onFailure("Response was not valid.");
                 }
             }
 
             @Override
             public void onFailure(Call<Pokemon> call, Throwable t) {
                 if(!call.isCanceled()) {
-                    responseValue = null;
+                    callBack.onFailure("Failure");
                 }
             }
         });
 
-        return (Pokemon) responseValue;
     }
 }

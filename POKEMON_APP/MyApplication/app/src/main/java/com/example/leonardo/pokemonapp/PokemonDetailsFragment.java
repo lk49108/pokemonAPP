@@ -55,11 +55,6 @@ public class PokemonDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pokemon_details, container, false);
 
-        PokemonMainActivity activity = (PokemonMainActivity) getActivity();
-        if(activity.verticalOrientation()) {
-            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
         ButterKnife.bind(this, view);
 
         if(savedInstanceState != null) {
@@ -68,16 +63,6 @@ public class PokemonDetailsFragment extends Fragment {
         reinitializeViews();
 
         return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        PokemonMainActivity activity = (PokemonMainActivity) getActivity();
-        if(activity.verticalOrientation()) {
-            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        }
     }
 
     private void reinitializeViews() {

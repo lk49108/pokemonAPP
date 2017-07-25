@@ -7,6 +7,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 /**
@@ -16,9 +17,9 @@ import retrofit2.http.POST;
 public interface PokemonService {
 
     @GET("api/v1/pokemons")
-    Call<Pokemon[]> getAllPokemons();
+    Call<Pokemon[]> getAllPokemons(@Header("Authorization") String authHeader);
 
     @POST("api/v1/pokemons")
-    Call<Pokemon> createPokemon(@Body Pokemon pokemon);
+    Call<Pokemon> createPokemon(@Body Pokemon pokemon, @Header("Authorization") String authHeader);
 
 }

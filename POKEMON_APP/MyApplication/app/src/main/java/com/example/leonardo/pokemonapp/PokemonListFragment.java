@@ -10,9 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
 import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
+import com.example.leonardo.pokemonapp.util.UserUtil;
 
 import java.util.List;
 
@@ -70,16 +73,26 @@ public class PokemonListFragment extends Fragment {
             Pokemon[] pokemons = (Pokemon[])savedInstanceState.getParcelableArray(SAVE_INSTANCE_STATE_EXISTING_POKEMONS_KEY);
             pokemonListAdapter.addAll(pokemons);
         } else {
-            //getPokemonsFromService();
+            getPokemonsFromService();
         }
 
         switchFragmentLayout();
     }
 
     private void getPokemonsFromService() {
-        Pokemon[] pokemons = NetworkExecutor.getInstance().getAllPokemons();
+        NetworkExecutor.getInstance().getAllPokemons(new CallbackInt() {
+            @Override
+            public void onSuccess(Object object) {
+                Pokemon[] pokemons = (Pokemon[]) object;
+                pokemonListAdapter.addAll(pokemons);
+            }
 
-        pokemonListAdapter.addAll(pokemons);
+            @Override
+            public void onFailure(String message) {
+                Toast.makeText(getActivity(), "Failed to download pokemons", Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
     @Override
@@ -101,8 +114,25 @@ public class PokemonListFragment extends Fragment {
     }
 
     public void addPokemon(Pokemon pokemon) {
+
+        if(!UserUtil.internetConnectionActive()) {
+            Toast.makeText(getActivity(), "pokemon will not be uploaded to server because there is no active internet connection", Toast.LENGTH_LONG).show();
+        }
+
         pokemonListAdapter.addPokemon(pokemon);
         switchFragmentLayout();
+
+        NetworkExecutor.getInstance().createPokemon(pokemon, new CallbackInt() {
+            @Override
+            public void onSuccess(Object object) {
+                Toast.makeText(getActivity(), "Pokemon succesfully uploaded to server.", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(String message) {
+                Toast.makeText(getActivity(), "Unable to upload pokemon to server.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void switchFragmentLayout() {
