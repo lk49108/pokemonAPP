@@ -76,6 +76,9 @@ public class PokemonDetailsFragment extends Fragment {
             pokemonDescriptionContent.setText(pokemon.getDescription());
 
             Uri pokemonImageSource = pokemon.getImageSource();
+            if(pokemonImageContent == null) {
+                return;
+            }
             if(pokemonImageSource != null && (PokemonResourcesUtil.imageFileExists(pokemonImageSource, getActivity()) || pokemonImageSource.toString().startsWith("http"))) {
                 Picasso.with(getActivity()).load(pokemonImageSource).into(pokemonImageContent);
             } else {

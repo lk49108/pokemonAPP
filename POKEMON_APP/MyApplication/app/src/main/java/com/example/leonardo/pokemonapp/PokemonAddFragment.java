@@ -253,7 +253,7 @@ public class PokemonAddFragment extends Fragment {
     }
 
     private void requestPermission(String permissionToBeGranted) {
-        ActivityCompat.requestPermissions(getActivity(), new String[] {permissionToBeGranted},
+        requestPermissions(new String[] {permissionToBeGranted},
                 PERMISSION_STORAGE_REQUEST_CODE
         );
     }
