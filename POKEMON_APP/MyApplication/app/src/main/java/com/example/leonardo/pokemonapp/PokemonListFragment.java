@@ -186,4 +186,11 @@ public class PokemonListFragment extends Fragment {
     public PokemonListFragment.PokemonListFragmentListener getListener() {
         return listener;
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        NetworkExecutor.getInstance().destroyAnyPendingTransactions();
+    }
 }

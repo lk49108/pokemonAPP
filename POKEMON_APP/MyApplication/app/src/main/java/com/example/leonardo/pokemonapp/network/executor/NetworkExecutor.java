@@ -27,7 +27,7 @@ public class NetworkExecutor {
 
     private NetworkExecutor(){}
 
-    private static Call<?> pendingCall;
+    private volatile static Call<?> pendingCall;
 
     public static NetworkExecutor getInstance() {
         if(networkExecutor == null) {
@@ -54,28 +54,34 @@ public class NetworkExecutor {
         UserService userService = ServiceCreator.getUserService();
 
         Call<User> call = userService.createUser(user);
-        pendingCall = call;
 
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if(response.isSuccessful()) {
-                    User responseUser = response.body();
-                    UserUtil.logInUser(responseUser);
+        Thread thread = new Thread(() -> {
+            while(pendingCall != null) {}
+            pendingCall = call;
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    pendingCall = null;
+                    if(response.isSuccessful()) {
+                        User responseUser = response.body();
+                        UserUtil.logInUser(responseUser);
 
-                    callBack.onSuccess((User) responseUser);
-                } else {
-                    callBack.onFailure("Response was not valid.");
+                        callBack.onSuccess((User) responseUser);
+                    } else {
+                        callBack.onFailure("Response was not valid.");
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                if(!call.isCanceled()) {
-                    callBack.onFailure("Failure");
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    pendingCall = null;
+                    if(!call.isCanceled()) {
+                        callBack.onFailure("Failure");
+                    }
                 }
-            }
+            });
         });
+        thread.start();
 
     }
 
@@ -83,26 +89,33 @@ public class NetworkExecutor {
         UserService userService = ServiceCreator.getUserService();
 
         Call<User> call = userService.loginUser(user);
-        pendingCall = call;
 
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if(response.isSuccessful()) {
-                    User responseUser = response.body();
-                    UserUtil.logInUser(responseUser);
+        Thread thread = new Thread(() -> {
+            while(pendingCall != null){}
+            pendingCall = call;
 
-                    callBack.onSuccess((User) responseUser);
-                } else {
-                    callBack.onFailure("Response was not valid.");
+            call.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    pendingCall = null;
+                    if(response.isSuccessful()) {
+                        User responseUser = response.body();
+                        UserUtil.logInUser(responseUser);
+
+                        callBack.onSuccess((User) responseUser);
+                    } else {
+                        callBack.onFailure("Response was not valid.");
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                callBack.onFailure("Failure");
-            }
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    pendingCall = null;
+                    callBack.onFailure("Failure");
+                }
+            });
         });
+       thread.start();
 
     }
 
@@ -110,23 +123,33 @@ public class NetworkExecutor {
         UserService userService = ServiceCreator.getUserService();
 
         Call<Void> call = userService.logoutUser(getAuthenticationString());
-        pendingCall = call;
 
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if(response.isSuccessful()) {
-                    callBack.onSuccess(null);
-                } else {
-                    callBack.onFailure("Response was not valid.");
+        Thread thread = new Thread(() -> {
+           while(pendingCall != null) {}
+
+            pendingCall = call;
+
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    pendingCall = null;
+                    if(response.isSuccessful()) {
+                        callBack.onSuccess(null);
+                    } else {
+                        callBack.onFailure("Response was not valid.");
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                callBack.onFailure("Failure");
-            }
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    pendingCall = null;
+                    callBack.onFailure("Failure");
+                }
+            });
         });
+
+        thread.start();
+
 
     }
 
@@ -135,49 +158,68 @@ public class NetworkExecutor {
 
 
         Call<Pokemon[]> call = pokeService.getAllPokemons(getAuthenticationString());
-        pendingCall = call;
 
-        call.enqueue(new Callback<Pokemon[]>() {
-            @Override
-            public void onResponse(Call<Pokemon[]> call, Response<Pokemon[]> response) {
-                if(response.isSuccessful()) {
-                    callBack.onSuccess(response.body());
-                } else {
-                    callBack.onFailure("Response was not valid.");
+        Thread thread = new Thread(() -> {
+            while(pendingCall != null) {}
+
+            pendingCall = call;
+
+            call.enqueue(new Callback<Pokemon[]>() {
+                @Override
+                public void onResponse(Call<Pokemon[]> call, Response<Pokemon[]> response) {
+                    pendingCall = null;
+                    if(response.isSuccessful()) {
+                        callBack.onSuccess(response.body());
+                    } else {
+                        callBack.onFailure("Response was not valid.");
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<Pokemon[]> call, Throwable t) {
-                callBack.onFailure("Failure");
-            }
+                @Override
+                public void onFailure(Call<Pokemon[]> call, Throwable t) {
+                    pendingCall = null;
+                    callBack.onFailure("Failure");
+                }
+            });
         });
+        thread.start();
+
 
     }
 
     public void createPokemon(Pokemon pokemon, CallbackInt callBack) {
         PokemonService pokeService = ServiceCreator.getPokemonService();
 
+
+
         Call<Pokemon> call = pokeService.createPokemon(pokemon, getAuthenticationString());
-        pendingCall = call;
 
-        call.enqueue(new Callback<Pokemon>() {
-            @Override
-            public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
-                if(response.isSuccessful()) {
-                    callBack.onSuccess(response.body());
-                } else {
-                    callBack.onFailure("Response was not valid.");
-                }
-            }
+        Thread thread = new Thread(() -> {
+            while(pendingCall != null) {}
+            pendingCall = call;
 
-            @Override
-            public void onFailure(Call<Pokemon> call, Throwable t) {
-                if(!call.isCanceled()) {
-                    callBack.onFailure("Failure");
+            call.enqueue(new Callback<Pokemon>() {
+                @Override
+                public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
+                    pendingCall = null;
+                    if(response.isSuccessful()) {
+                        callBack.onSuccess(response.body());
+                    } else {
+                        callBack.onFailure("Response was not valid.");
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(Call<Pokemon> call, Throwable t) {
+                    pendingCall = null;
+                    if(!call.isCanceled()) {
+                        callBack.onFailure("Failure");
+                    }
+                }
+            });
         });
+        thread.start();
+
 
     }
 }

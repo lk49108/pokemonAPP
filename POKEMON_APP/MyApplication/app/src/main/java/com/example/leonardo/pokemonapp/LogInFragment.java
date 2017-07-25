@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
 import com.example.leonardo.pokemonapp.network.resources.User;
 import com.example.leonardo.pokemonapp.util.UserUtil;
 import com.squareup.moshi.JsonAdapter;
@@ -141,5 +142,12 @@ public class LogInFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putString("email", emailView.getText().toString());
         outState.putString("password", passwordView.getText().toString());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        NetworkExecutor.getInstance().destroyAnyPendingTransactions();
     }
 }

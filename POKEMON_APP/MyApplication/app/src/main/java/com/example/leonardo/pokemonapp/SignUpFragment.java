@@ -166,4 +166,11 @@ public class SignUpFragment extends Fragment {
         outState.putString("password", fragmentSignUpPasswordEditText.getText().toString());
         outState.putString("confirmationPassword", fragmentSignUpPasswordConfirmationEditText.getText().toString());
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        NetworkExecutor.getInstance().destroyAnyPendingTransactions();
+    }
 }
