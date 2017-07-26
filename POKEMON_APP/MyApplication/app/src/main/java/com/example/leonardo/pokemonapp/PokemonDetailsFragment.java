@@ -4,19 +4,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.internal.Utils;
 
 /**
  * Created by leonardo on 20/07/17.
@@ -56,11 +56,6 @@ public class PokemonDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pokemon_details, container, false);
 
-        PokemonMainActivity activity = (PokemonMainActivity) getActivity();
-        if(activity.verticalOrientation()) {
-            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
         ButterKnife.bind(this, view);
 
         if(savedInstanceState != null) {
@@ -69,16 +64,6 @@ public class PokemonDetailsFragment extends Fragment {
         reinitializeViews();
 
         return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        PokemonMainActivity activity = (PokemonMainActivity) getActivity();
-        if(activity.verticalOrientation()) {
-            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        }
     }
 
     private void reinitializeViews() {
@@ -91,10 +76,14 @@ public class PokemonDetailsFragment extends Fragment {
             pokemonDescriptionContent.setText(pokemon.getDescription());
 
             Uri pokemonImageSource = pokemon.getImageSource();
-            if(pokemonImageSource != null && PokemonResourcesUtil.imageFileExists(pokemonImageSource, getActivity())) {
-                Picasso.with(getActivity()).load(pokemonImageSource).into(pokemonImageContent);
+            if(pokemonImageContent == null) {
+                return;
             }
-
+            if(pokemonImageSource != null && (PokemonResourcesUtil.imageFileExists(pokemonImageSource, getActivity()) || pokemonImageSource.toString().startsWith("http"))) {
+                Picasso.with(getActivity()).load(pokemonImageSource).into(pokemonImageContent);
+            } else {
+                Picasso.with(getActivity()).load(R.drawable.ic_person).into(pokemonImageContent);
+            }
         }
     }
 

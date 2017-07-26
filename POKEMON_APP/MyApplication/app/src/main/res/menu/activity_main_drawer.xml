@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_nav_home"
+            android:icon="@drawable/ic_description"
+            android:title="Pokemon list" />
+        <item
+            android:id="@+id/menu_nav_log_out"
+            android:icon="@drawable/ic_logout"
+            android:title="Log out" />
+
+    </group>
+
+</menu>

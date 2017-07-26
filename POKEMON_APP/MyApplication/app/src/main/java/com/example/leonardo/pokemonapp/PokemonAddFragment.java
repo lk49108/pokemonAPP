@@ -14,7 +14,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;
 import com.squareup.picasso.Picasso;
 
@@ -101,10 +101,6 @@ public class PokemonAddFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pokemon_add, container, false);
 
-        PokemonMainActivity activity = (PokemonMainActivity) listener;
-        if(activity.verticalOrientation()) {
-            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
         ButterKnife.bind(this, view);
 
         if(savedInstanceState != null) {
@@ -131,16 +127,6 @@ public class PokemonAddFragment extends Fragment {
         fragmentPokemonAddOptionCategory.setText(savedInstanceState.getString("category"));
         fragmentPokemonAddOptionAbilities.setText(savedInstanceState.getString("abilities"));
         fragmentPokemonAddOptionDescription.setText(savedInstanceState.getString("description"));
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        PokemonMainActivity activity = (PokemonMainActivity) listener;
-        if(activity.verticalOrientation()) {
-            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        }
     }
 
     @Override
@@ -267,7 +253,7 @@ public class PokemonAddFragment extends Fragment {
     }
 
     private void requestPermission(String permissionToBeGranted) {
-        ActivityCompat.requestPermissions(getActivity(), new String[] {permissionToBeGranted},
+        requestPermissions(new String[] {permissionToBeGranted},
                 PERMISSION_STORAGE_REQUEST_CODE
         );
     }

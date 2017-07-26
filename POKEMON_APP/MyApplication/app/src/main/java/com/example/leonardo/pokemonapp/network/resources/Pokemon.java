@@ -1,29 +1,43 @@
-package com.example.leonardo.pokemonapp;
+package com.example.leonardo.pokemonapp.network.resources;
 
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
+import com.squareup.moshi.Json;
+
+import moe.banana.jsonapi2.JsonApi;
+import moe.banana.jsonapi2.Resource;
 
 /**
  * Created by leonardo on 12/07/17.
  */
-public class Pokemon implements Parcelable {
+@JsonApi(type = "pokemons")
+public class Pokemon extends Resource implements Parcelable {
 
+    @Json(name = "image-url")
     private Uri imageSource;
 
+    @Json(name = "name")
     private String name;
 
+    @Json(name = "description")
     private String description;
 
+    @Json(name = "height")
     private String height;
 
+    @Json(name = "weight")
     private String weight;
 
+    @Json(name = "category")
     private String category;
 
+    @Json(name = "gender")
     private String abilities;
+
+    public Pokemon() {
+    }
 
     public Uri getImageSource() {
         return imageSource;

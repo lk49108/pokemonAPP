@@ -1,10 +1,6 @@
 package com.example.leonardo.pokemonapp.fragmentHandler;
 
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-
-import com.example.leonardo.pokemonapp.Pokemon;
+import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 
 /**
  * Created by leonardo on 20/07/17.

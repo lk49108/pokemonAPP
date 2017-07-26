@@ -1,25 +1,16 @@
 package com.example.leonardo.pokemonapp;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +58,8 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
         holder.pokemonNameTextView.setText(pokemon.getName());
 
         try {
-            if(PokemonResourcesUtil.imageFileExists(pokemon.getImageSource(), fragment.getActivity())) {
+            if(PokemonResourcesUtil.imageFileExists(pokemon.getImageSource(), fragment.getActivity()) ||
+                pokemon.getImageSource().toString().startsWith("http")) {
                 Picasso.with(fragment.getActivity()).load(pokemons.get(position).getImageSource()).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);
             } else {
                 Picasso.with(fragment.getActivity()).load(R.drawable.ic_person).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);

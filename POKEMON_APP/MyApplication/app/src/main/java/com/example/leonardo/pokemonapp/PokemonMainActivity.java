@@ -1,10 +1,13 @@
 package com.example.leonardo.pokemonapp;
 
-import android.content.res.Configuration;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -12,18 +15,26 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.fragmentHandler.FragmentMainActivityHandlerHorizontalTablet;
 import com.example.leonardo.pokemonapp.fragmentHandler.FragmentMainActivityHandlerInt;
 import com.example.leonardo.pokemonapp.fragmentHandler.FragmentMainActivityHandlerRegular;
+import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
+import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
+import com.example.leonardo.pokemonapp.network.resources.Pokemon;
+import com.example.leonardo.pokemonapp.network.resources.User;
+import com.example.leonardo.pokemonapp.util.UserUtil;
 
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PokemonMainActivity extends AppCompatActivity implements PokemonListFragment.PokemonListFragmentListener, PokemonAddFragment.PokemonAddFragmentListener {
+public class PokemonMainActivity extends AppCompatActivity implements PokemonListFragment.PokemonListFragmentListener,
+        PokemonAddFragment.PokemonAddFragmentListener, NavigationView.OnNavigationItemSelectedListener{
 
     @BindString(R.string.pokemon_list_activity_title)
     String title;
@@ -35,6 +46,14 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
     @BindView(R.id.activity_pokemon_main_fragment_container_pokemon_add_details)
     @Nullable
     public FrameLayout pokemonAddDetailFragmentContainer;
+    @BindView(R.id.activity_main_drawer_layout)
+    DrawerLayout drawer;
+    @BindView(R.id.activity_main_navigation_view)
+    NavigationView navigationView;
+
+    private TextView emailTextView;
+    private TextView usernameTextView;
+    private View navigationViewHeader;
 
     FragmentMainActivityHandlerInt fragmentHandler;
 
@@ -45,9 +64,13 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
 
         ButterKnife.bind(this);
 
+        initializeDrawerBehaviour();
+
         setSupportActionBar(pokemonMainActivityToolbar);
         getSupportActionBar().setTitle(title);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         if(pokemonAddDetailFragmentContainer != null) {
             fragmentHandler = new FragmentMainActivityHandlerHorizontalTablet(this);
         } else {
@@ -63,6 +86,65 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
                 fragmentHandler.fromOtherConfigurationInitialization();
             }
         }
+    }
+
+    private void initializeDrawerBehaviour() {
+
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
+                this,
+                drawer,
+                pokemonMainActivityToolbar,
+                R.string.drawer_open,
+                R.string.drawer_close) {
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+        };
+
+        drawer.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
+
+        navigationView.setNavigationItemSelectedListener(this);
+
+        navigationViewHeader = (View) navigationView.getHeaderView(0);
+        emailTextView = (TextView) navigationViewHeader.findViewById(R.id.nav_header_main_activity_email);
+        usernameTextView = (TextView) navigationViewHeader.findViewById(R.id.nav_header_main_activity_username);
+
+        User loggedInUser = UserUtil.getLoggedInUser();
+        emailTextView.setText(loggedInUser.getEmail());
+        usernameTextView.setText(loggedInUser.getUserName());
+    }
+
+    public void logOut() {
+
+        boolean internetActionActive = UserUtil.internetConnectionActive();
+
+        if(!internetActionActive) {
+            Toast.makeText(this, "No internet connectivity", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        NetworkExecutor.getInstance().logOut(new CallbackInt() {
+            @Override
+            public void onSuccess(Object object) {
+                UserUtil.logOutUser();
+                Intent intent = new Intent(PokemonMainActivity.this, RegisterActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(String message) {
+                Toast.makeText(PokemonMainActivity.this, "Unable to log out", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public boolean verticalOrientation() {
@@ -110,6 +192,9 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
             case R.id.action_add_pokemon:
                 insertPokemonAddFragmentToActivity();
                 return true;
+            case android.R.id.home:
+                drawer.openDrawer(GravityCompat.START);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -136,12 +221,6 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
     }
 
     @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
-    }
-
-    @Override
     public void onBackPressed() {
        if(!fragmentHandler.onBackPressed()) {
            super.onBackPressed();
@@ -160,4 +239,31 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
 
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        drawer.closeDrawers();
+
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.menu_nav_home:
+                if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    onBackPressed();
+                }
+                return true;
+            case R.id.menu_nav_log_out:
+                logOut();
+                return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        NetworkExecutor.getInstance().destroyAnyPendingTransactions();
+    }
 }
