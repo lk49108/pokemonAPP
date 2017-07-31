@@ -1,27 +1,39 @@
 package com.example.leonardo.pokemonapp.network.executor;
 
+import android.content.Context;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.widget.Toast;
 
-import com.example.leonardo.pokemonapp.LogInFragment_ViewBinding;
-import com.example.leonardo.pokemonapp.PermissionApp;
 import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.network.resources.User;
 import com.example.leonardo.pokemonapp.network.services.PokemonService;
 import com.example.leonardo.pokemonapp.network.services.UserService;
+import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;
 import com.example.leonardo.pokemonapp.util.UserUtil;
 
+
+import java.io.File;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Multipart;
 
 /**
  * Created by leonardo on 23/07/17.
  */
 
 public class NetworkExecutor {
+
+    public static File imageFile;
 
     private static NetworkExecutor networkExecutor;
 
@@ -81,6 +93,7 @@ public class NetworkExecutor {
                 }
             });
         });
+        thread.setDaemon(true);
         thread.start();
 
     }
@@ -115,7 +128,8 @@ public class NetworkExecutor {
                 }
             });
         });
-       thread.start();
+        thread.setDaemon(true);
+        thread.start();
 
     }
 
@@ -147,7 +161,7 @@ public class NetworkExecutor {
                 }
             });
         });
-
+        thread.setDaemon(true);
         thread.start();
 
 
@@ -169,6 +183,7 @@ public class NetworkExecutor {
                 public void onResponse(Call<Pokemon[]> call, Response<Pokemon[]> response) {
                     pendingCall = null;
                     if(response.isSuccessful()) {
+                        Log.d("successs", "jes :D");
                         callBack.onSuccess(response.body());
                     } else {
                         callBack.onFailure("Response was not valid.");
@@ -182,17 +197,17 @@ public class NetworkExecutor {
                 }
             });
         });
+        thread.setDaemon(true);
         thread.start();
 
 
     }
 
-    public void createPokemon(Pokemon pokemon, CallbackInt callBack) {
+    public void createPokemon(Pokemon pokemon, CallbackInt callBack, Context context) {
         PokemonService pokeService = ServiceCreator.getPokemonService();
 
-
-
-        Call<Pokemon> call = pokeService.createPokemon(pokemon, getAuthenticationString());
+        RequestBody requestBody = createRequestBodyWithImageToBeSent(pokemon, context);
+        Call<Pokemon> call = pokeService.createPokemon(getAuthenticationString(), pokemon.getName(), pokemon.getHeight(), pokemon.getWeight(), pokemon.getGenderId(), pokemon.getDescription(), requestBody);
 
         Thread thread = new Thread(() -> {
             while(pendingCall != null) {}
@@ -218,8 +233,33 @@ public class NetworkExecutor {
                 }
             });
         });
+        thread.setDaemon(true);
         thread.start();
 
 
     }
+
+    private RequestBody createRequestBodyWithImageToBeSent(Pokemon pokemon, Context context) {
+        Uri imageUri = pokemon.getImageSource();
+        if(imageUri == null) {
+            return null;
+        }
+
+        byte[] imageByteArray = PokemonResourcesUtil.readImageFile(imageUri, context);
+/*
+        RequestBody filePart = RequestBody.create(
+                MediaType.parse(context.getContentResolver().getType(imageUri)),
+                imageByteArray
+        );
+*/
+        RequestBody filePart = RequestBody.create(MediaType.parse("image/jpg"), imageFile);
+
+        //MultipartBody.Part file = MultipartBody.Part.createFormData(
+          //      "photo", "pokemonImage.jpg", filePart
+        //);
+
+        return filePart;
+        //return file;
+    }
+
 }

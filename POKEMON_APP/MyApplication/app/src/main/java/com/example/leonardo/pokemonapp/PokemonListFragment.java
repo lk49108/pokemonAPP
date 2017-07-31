@@ -2,16 +2,22 @@ package com.example.leonardo.pokemonapp;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.renderscript.ScriptIntrinsicYuvToRGB;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.database.DatabaseCreator;
+import com.example.leonardo.pokemonapp.database.SQLitePokedex;
+import com.example.leonardo.pokemonapp.database.model.PokemonDb;
 import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
 import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
@@ -29,7 +35,7 @@ import butterknife.ButterKnife;
 public class PokemonListFragment extends Fragment {
 
     private int i;
-    private boolean successedToDownloadPokemons;
+    private volatile boolean successedToDownloadPokemons;
 
     private static final String SAVE_INSTANCE_STATE_EXISTING_POKEMONS_KEY = "pokemons.list.fragment.save.instance.state.key";
 
@@ -41,6 +47,8 @@ public class PokemonListFragment extends Fragment {
 
     public PokemonListAdapter pokemonListAdapter;
 
+    @BindView(R.id.fragment_pokemon_list_swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.fragment_pokemon_list_empty_pokemon_list_layout)
     View emptyPokemonListView;
     @BindView(R.id.fragment_pokemon_list_recycler_view)
@@ -55,16 +63,13 @@ public class PokemonListFragment extends Fragment {
         return new PokemonListFragment();
     }
 
+    private SQLitePokedex pokedex;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(pokemonListAdapter == null) {
-            pokemonListAdapter = new PokemonListAdapter(this);
-        }
-        if(savedInstanceState == null) {
-            getPokemonsFromService();
-        }
+        pokedex = DatabaseCreator.getPokedexTableConnection();
     }
 
     @Nullable
@@ -74,6 +79,7 @@ public class PokemonListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_pokemon_list, container, false);
 
         ButterKnife.bind(this, view);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeOnRefreshListener());
 
         return view;
     }
@@ -82,34 +88,57 @@ public class PokemonListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        configureRecyclerViewBehaviour();
-
         if(savedInstanceState != null) {
+            pokemonListAdapter = new PokemonListAdapter(this);
+            configureRecyclerViewBehaviour();
             Pokemon[] pokemons = (Pokemon[])savedInstanceState.getParcelableArray(SAVE_INSTANCE_STATE_EXISTING_POKEMONS_KEY);
             pokemonListAdapter.addAll(pokemons);
+        } else if(pokemonListAdapter == null){
+            pokemonListAdapter = new PokemonListAdapter(this);
+            configureRecyclerViewBehaviour();
+            getPokemons();
         }
 
+        configureRecyclerViewBehaviour();
         switchFragmentLayout();
     }
 
-    private void getPokemonsFromService() {
+    private void getPokemons() {
 
         if(!UserUtil.internetConnectionActive()) {
-            Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "No internet connection, offline mode.", Toast.LENGTH_LONG).show();
+            loadFromDatabase();
             return;
         }
+
+        downloadPokemons(false);
+
+    }
+
+    private void downloadPokemons(boolean refreshing) {
+        //Download from internet service
 
         for(i = 0; i < 3; i++) {
             NetworkExecutor.getInstance().getAllPokemons(new CallbackInt() {
                 @Override
                 public void onSuccess(Object object) {
+                    if(refreshing) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+
                     if(successedToDownloadPokemons) {
                         return;
                     }
                     successedToDownloadPokemons = true;
                     Pokemon[] pokemons = (Pokemon[]) object;
+
+                    pokemonListAdapter = new PokemonListAdapter(PokemonListFragment.this);
                     pokemonListAdapter.addAll(pokemons);
+                    recyclerView.setAdapter(pokemonListAdapter);
+
                     switchFragmentLayout();
+
+                    refreshCaching();
                 }
 
                 @Override
@@ -121,7 +150,20 @@ public class PokemonListFragment extends Fragment {
             });
         }
 
+    }
 
+    private void refreshCaching() {
+        //remove All caching and refresh it
+        Toast.makeText(getActivity(), "Brisem sve i spremam", Toast.LENGTH_SHORT).show();
+        pokedex.clearPokemonTable();
+        pokedex.savePokemons(PokemonDb.fromPokemonList(pokemonListAdapter.getPokemons()));
+    }
+
+    private void loadFromDatabase() {
+        Toast.makeText(getActivity(), "Loadam iz baze podataka.", Toast.LENGTH_SHORT).show();
+        List<PokemonDb> dBPokemons = pokedex.getPokemons();
+
+        pokemonListAdapter.addAll(Pokemon.fromPokemonDbList(dBPokemons));
     }
 
     @Override
@@ -141,11 +183,9 @@ public class PokemonListFragment extends Fragment {
 
     public void addPokemon(Pokemon pokemon) {
 
-        if(!UserUtil.internetConnectionActive()) {
-            Toast.makeText(getActivity(), "pokemon will not be uploaded to server because there is no active internet connection", Toast.LENGTH_LONG).show();
-        }
-
         pokemonListAdapter.addPokemon(pokemon);
+        Toast.makeText(getActivity(), "Dodajem jednoga i spremam", Toast.LENGTH_SHORT).show();
+        pokedex.addPokemon(PokemonDb.fromPokemon(pokemon));
         switchFragmentLayout();
 
         NetworkExecutor.getInstance().createPokemon(pokemon, new CallbackInt() {
@@ -158,7 +198,7 @@ public class PokemonListFragment extends Fragment {
             public void onFailure(String message) {
                 Toast.makeText(getActivity(), "Unable to upload pokemon to server.", Toast.LENGTH_LONG).show();
             }
-        });
+        }, getActivity());
     }
 
     private void switchFragmentLayout() {
@@ -192,5 +232,23 @@ public class PokemonListFragment extends Fragment {
         super.onDestroy();
 
         NetworkExecutor.getInstance().destroyAnyPendingTransactions();
+    }
+
+    private class SwipeOnRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
+
+        @Override
+        public void onRefresh() {
+
+            if(!UserUtil.internetConnectionActive()) {
+                Toast.makeText(getActivity(), "No internet connection, could not refresh pokemon list.", Toast.LENGTH_LONG).show();
+                swipeRefreshLayout.setRefreshing(false);
+                return;
+            }
+
+            successedToDownloadPokemons = false;
+            downloadPokemons(true);
+
+        }
+
     }
 }

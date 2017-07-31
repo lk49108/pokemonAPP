@@ -12,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
+import com.example.leonardo.pokemonapp.ui.pokemonDetails.DetailsMvp;
+import com.example.leonardo.pokemonapp.ui.pokemonDetails.DetailsPresenter;
 import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;
 import com.squareup.picasso.Picasso;
 
@@ -22,7 +24,7 @@ import butterknife.ButterKnife;
  * Created by leonardo on 20/07/17.
  */
 
-public class PokemonDetailsFragment extends Fragment {
+public class PokemonDetailsFragment extends Fragment implements DetailsMvp.View {
 
     @BindView(R.id.fragment_pokemon_details_text_height_content)
     TextView pokemonHeightContent;
@@ -41,6 +43,8 @@ public class PokemonDetailsFragment extends Fragment {
 
     private Pokemon pokemon;
 
+    private DetailsMvp.Presenter presenter;
+
     public PokemonDetailsFragment() {
     }
 
@@ -48,6 +52,8 @@ public class PokemonDetailsFragment extends Fragment {
         PokemonDetailsFragment instance = new PokemonDetailsFragment();
         instance.pokemon = pokemon;
 
+        instance.presenter = new DetailsPresenter();
+        instance.presenter.setView(instance);
         return instance;
     }
 
@@ -61,21 +67,19 @@ public class PokemonDetailsFragment extends Fragment {
         if(savedInstanceState != null) {
             pokemon = savedInstanceState.getParcelable("pokemon");
         }
+
         reinitializeViews();
 
         return view;
     }
 
     private void reinitializeViews() {
-        if(pokemon != null) {
-            pokemonHeightContent.setText(pokemon.getHeight());
-            pokemonWeightContent.setText(pokemon.getWeight());
-            pokemonCategoryContent.setText(pokemon.getCategory());
-            pokemonAbilitiesContent.setText(pokemon.getAbilities());
-            pokemonNameContent.setText(pokemon.getName());
-            pokemonDescriptionContent.setText(pokemon.getDescription());
+        presenter.validateData(pokemon);
 
-            Uri pokemonImageSource = pokemon.getImageSource();
+
+
+        if(pokemon != null) {
+
             if(pokemonImageContent == null) {
                 return;
             }
@@ -95,5 +99,16 @@ public class PokemonDetailsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable("pokemon", pokemon);
+    }
+
+    @Override
+    public void setData(Pokemon pokemon) {
+        pokemonHeightContent.setText(pokemon.getHeight());
+        pokemonWeightContent.setText(pokemon.getWeight());
+        pokemonCategoryContent.setText(pokemon.getCategory());
+        pokemonAbilitiesContent.setText(pokemon.getAbilities());
+        pokemonNameContent.setText(pokemon.getName());
+        pokemonDescriptionContent.setText(pokemon.getDescription());
+
     }
 }

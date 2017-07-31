@@ -57,6 +57,7 @@
                         android:id="@+id/fragment_pokemon_add_option_name"
                         android:layout_width="0dp"
                         android:hint="Name"
+                        android:text="ime"
                         android:layout_height="wrap_content" />
 
                 </LinearLayout>
@@ -82,6 +83,7 @@
                         android:id="@+id/fragment_pokemon_add_option_height"
                         android:layout_width="0dp"
                         android:hint="Height"
+                        android:text="100"
                         android:layout_height="wrap_content" />
 
                 </LinearLayout>
@@ -107,6 +109,7 @@
                         android:id="@+id/fragment_pokemon_add_option_weight"
                         android:layout_width="0dp"
                         android:hint="Weight"
+                        android:text="20"
                         android:layout_height="wrap_content" />
 
                 </LinearLayout>
@@ -132,6 +135,7 @@
                         android:id="@+id/fragment_pokemon_add_option_category"
                         android:layout_width="0dp"
                         android:hint="Category"
+                        android:text="kategorija"
                         android:layout_height="wrap_content" />
 
                 </LinearLayout>
@@ -157,6 +161,7 @@
                         android:id="@+id/fragment_pokemon_add_option_abilities"
                         android:layout_width="0dp"
                         android:hint="Abilities"
+                        android:text="abilitiji"
                         android:layout_height="wrap_content" />
 
                 </LinearLayout>
@@ -183,6 +188,7 @@
                         android:id="@+id/fragment_pokemon_add_option_description"
                         android:layout_width="0dp"
                         android:hint="Description"
+                        android:text="opis"
                         android:layout_height="wrap_content" />
 
                 </LinearLayout>

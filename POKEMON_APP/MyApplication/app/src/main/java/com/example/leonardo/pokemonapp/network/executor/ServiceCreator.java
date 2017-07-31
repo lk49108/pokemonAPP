@@ -19,6 +19,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.moshi.MoshiConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * Created by leonardo on 23/07/17.
@@ -72,6 +73,7 @@ public class ServiceCreator {
 
         restAdapter = new Retrofit.Builder()
                 .baseUrl(API_ENDPOINT)
+                .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(JsonApiConverterFactory.create(moshi))
                 .client(client).build();
     }

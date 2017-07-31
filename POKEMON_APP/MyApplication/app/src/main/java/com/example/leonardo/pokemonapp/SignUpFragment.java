@@ -84,7 +84,7 @@ public class SignUpFragment extends Fragment {
             errorMessage = "Email is not valid";
             return false;
         }
-        
+
         if(password.isEmpty()) {
             errorMessage = "Password can not be mepty";
             return false;
