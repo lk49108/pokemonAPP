@@ -162,10 +162,13 @@ public class LogInFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         final ViewTreeObserver observer = view.getViewTreeObserver();
+
         observer.addOnGlobalLayoutListener(() -> {
             if(firstTime) {
                 firstTime = false;
                 animate(savedInstanceState);
+            } else {
+                firstTime = true;
             }
         });
 
@@ -174,12 +177,6 @@ public class LogInFragment extends Fragment {
         }
 
         return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        firstTime = true;
     }
 
     private void animate(Bundle savedInstanceState) {
