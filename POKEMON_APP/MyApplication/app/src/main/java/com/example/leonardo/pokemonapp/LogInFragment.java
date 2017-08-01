@@ -43,7 +43,7 @@ public class LogInFragment extends Fragment {
 
     private boolean pokemonLogoAnimatorFinished;
     private boolean pokeBallAnimatorFinished;
-    private boolean finished = false;
+    private boolean finished;
 
     ObjectAnimator pokemonLogoAnimator;
     ObjectAnimator pokeBallAnimatorX;
@@ -176,9 +176,14 @@ public class LogInFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        firstTime = true;
+    }
+
     private void animate(Bundle savedInstanceState) {
         if(finished) {
-            Toast.makeText(getActivity(), "hetre", Toast.LENGTH_SHORT).show();
             scrollView.setScrollContainer(true);
             ll2.setVisibility(View.VISIBLE);
             logInButton.setVisibility(View.VISIBLE);
@@ -277,8 +282,14 @@ public class LogInFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putString("email", emailView.getText().toString());
         outState.putString("password", passwordView.getText().toString());
-        outState.putLong("pokemonLogoAnimationStatus", pokemonLogoAnimatorFinished && pokemonLogoAnimator != null ? -1 : pokemonLogoAnimator.getCurrentPlayTime());
-        outState.putLong("pokeBallAnimationStatus", pokeBallAnimatorFinished && pokeBallAnimatorX != null && pokeBallAnimatorY != null ? -1 : pokeBallAnimatorX.getCurrentPlayTime());
+        if(pokemonLogoAnimator == null && pokeBallAnimatorX == null && pokeBallAnimatorY == null) {
+            outState.putLong("pokemonLogoAnimationStatus", -1);
+            outState.putLong("pokeBallAnimationStatus", -1);
+            outState.putBoolean("animationFinished", true);
+            return;
+        }
+        outState.putLong("pokemonLogoAnimationStatus", pokemonLogoAnimatorFinished  ? -1 : pokemonLogoAnimator.getCurrentPlayTime());
+        outState.putLong("pokeBallAnimationStatus", pokeBallAnimatorFinished ? -1 : pokeBallAnimatorX.getCurrentPlayTime());
         outState.putBoolean("animationFinished", finished);
     }
 
