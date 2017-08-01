@@ -44,8 +44,9 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
     private void initializeLayout() {
         getSupportActionBar().hide();
 
+        Intent intent = getIntent();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(fragmentContainer.getId(), LogInFragment.newInstance()).commit();
+        transaction.replace(fragmentContainer.getId(), LogInFragment.newInstance(intent.getBooleanExtra("logOutPressed", false))).commit();
     }
 
     @Override

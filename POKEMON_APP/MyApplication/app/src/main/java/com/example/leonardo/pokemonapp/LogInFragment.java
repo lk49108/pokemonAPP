@@ -43,7 +43,7 @@ public class LogInFragment extends Fragment {
 
     private boolean pokemonLogoAnimatorFinished;
     private boolean pokeBallAnimatorFinished;
-    private boolean finished;
+    private boolean finished = false;
 
     ObjectAnimator pokemonLogoAnimator;
     ObjectAnimator pokeBallAnimatorX;
@@ -137,8 +137,10 @@ public class LogInFragment extends Fragment {
     public LogInFragment() {
     }
 
-    public static LogInFragment newInstance() {
-        return new LogInFragment();
+    public static LogInFragment newInstance(boolean finished) {
+        LogInFragment fragment = new LogInFragment();
+        fragment.finished = finished;
+        return fragment;
     }
 
     @Override
@@ -175,12 +177,22 @@ public class LogInFragment extends Fragment {
     }
 
     private void animate(Bundle savedInstanceState) {
+        if(finished) {
+            Toast.makeText(getActivity(), "hetre", Toast.LENGTH_SHORT).show();
+            scrollView.setScrollContainer(true);
+            ll2.setVisibility(View.VISIBLE);
+            logInButton.setVisibility(View.VISIBLE);
+            signUpButton.setVisibility(View.VISIBLE);
+            ll.setVisibility(View.VISIBLE);
+            pokeBall.setVisibility(View.VISIBLE);
+            return;
+        }
+
         if(savedInstanceState != null) {
             if(savedInstanceState.getBoolean("finished")) {
                 return;
             }
         }
-            int[] location = new int[2];
 
         pokemonLogoAnimator = ObjectAnimator.ofFloat(pokemonLogo, "translationY", root.getHeight() / 1.7f, 0);
         pokeBallAnimatorX = ObjectAnimator.ofFloat(pokeBall, "scaleX", 0f, 1f);
@@ -265,8 +277,8 @@ public class LogInFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putString("email", emailView.getText().toString());
         outState.putString("password", passwordView.getText().toString());
-        outState.putLong("pokemonLogoAnimationStatus", pokemonLogoAnimatorFinished ? -1 : pokemonLogoAnimator.getCurrentPlayTime());
-        outState.putLong("pokeBallAnimationStatus", pokeBallAnimatorFinished ? -1 : pokeBallAnimatorX.getCurrentPlayTime());
+        outState.putLong("pokemonLogoAnimationStatus", pokemonLogoAnimatorFinished && pokemonLogoAnimator != null ? -1 : pokemonLogoAnimator.getCurrentPlayTime());
+        outState.putLong("pokeBallAnimationStatus", pokeBallAnimatorFinished && pokeBallAnimatorX != null && pokeBallAnimatorY != null ? -1 : pokeBallAnimatorX.getCurrentPlayTime());
         outState.putBoolean("animationFinished", finished);
     }
 

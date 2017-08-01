@@ -136,6 +136,7 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
             public void onSuccess(Object object) {
                 UserUtil.logOutUser();
                 Intent intent = new Intent(PokemonMainActivity.this, RegisterActivity.class);
+                intent.putExtra("logOutPressed", true);
                 startActivity(intent);
                 finish();
             }
