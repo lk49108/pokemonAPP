@@ -153,14 +153,12 @@ public class PokemonListFragment extends Fragment {
     }
 
     private void refreshCaching() {
-        //remove All caching and refresh it
-        Toast.makeText(getActivity(), "Brisem sve i spremam", Toast.LENGTH_SHORT).show();
+        //remove all of the cached values and refresh it
         pokedex.clearPokemonTable();
         pokedex.savePokemons(PokemonDb.fromPokemonList(pokemonListAdapter.getPokemons()));
     }
 
     private void loadFromDatabase() {
-        Toast.makeText(getActivity(), "Loadam iz baze podataka.", Toast.LENGTH_SHORT).show();
         List<PokemonDb> dBPokemons = pokedex.getPokemons();
 
         pokemonListAdapter.addAll(Pokemon.fromPokemonDbList(dBPokemons));
@@ -184,7 +182,6 @@ public class PokemonListFragment extends Fragment {
     public void addPokemon(Pokemon pokemon) {
 
         pokemonListAdapter.addPokemon(pokemon);
-        Toast.makeText(getActivity(), "Dodajem jednoga i spremam", Toast.LENGTH_SHORT).show();
         pokedex.addPokemon(PokemonDb.fromPokemon(pokemon));
         switchFragmentLayout();
 

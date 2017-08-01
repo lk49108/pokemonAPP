@@ -1,12 +1,16 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="ThemeOverlay.AppCompat.ActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="Toolbar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <!-- Customize your theme here. -->
         <item name="android:textColorPrimary">@color/colorWhite</item>
+        <item name="android:background">@color/colorPrimary</item>
     </style>
 
     <style name="FABTint" parent="Widget.Design.FloatingActionButton">

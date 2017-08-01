@@ -32,12 +32,6 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        if(UserUtil.loggedIn()) {
-            Intent intent = new Intent(this, PokemonMainActivity.class);
-            startActivity(intent);
-            finish();
-        }
-
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
@@ -88,6 +82,12 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
         transaction.replace(fragmentContainer.getId(), SignUpFragment.newInstance());
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    @Override
+    public void finish() {
+        Intent intent = new Intent(this, PokemonMainActivity.class);
+        startActivity(intent);
     }
 
 

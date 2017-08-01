@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/fragment_log_in_root_element">
 
     <ScrollView
+        android:id="@+id/log_in_fragment_scroll_view"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/fragment_log_in_log_in_button"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_width="0dp"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        android:isScrollContainer="false">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -28,6 +32,7 @@
                 android:src="@drawable/pokemon_logo"/>
 
             <ImageView
+                android:visibility="invisible"
                 android:id="@+id/fragment_log_in_poke_ball"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -37,6 +42,7 @@
                 android:src="@drawable/pokeball" />
 
             <LinearLayout
+                android:visibility="invisible"
                 android:layout_marginTop="20dp"
                 android:id="@+id/fragment_log_in_ll"
                 android:layout_marginStart="15dp"
@@ -66,6 +72,8 @@
 
 
             <LinearLayout
+                android:id="@+id/fragment_log_in_ll2"
+                android:visibility="invisible"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="5dp"
                 android:layout_width="0dp"
@@ -99,6 +107,7 @@
 
 
     <Button
+        android:visibility="gone"
         android:id="@+id/fragment_log_in_sign_up_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -111,6 +120,7 @@
 
 
     <Button
+        android:visibility="gone"
         android:id="@+id/fragment_log_in_log_in_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

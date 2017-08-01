@@ -20,9 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
             android:elevation="4dp"
-            android:theme="@style/AppTheme"
+            android:theme="@style/Toolbar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:layout_constraintHorizontal_bias="1">
         </android.support.v7.widget.Toolbar>
