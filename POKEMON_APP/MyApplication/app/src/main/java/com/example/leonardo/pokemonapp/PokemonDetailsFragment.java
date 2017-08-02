@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;
@@ -41,6 +40,7 @@ public class PokemonDetailsFragment extends Fragment {
 
     private Pokemon pokemon;
 
+
     public PokemonDetailsFragment() {
     }
 
@@ -61,6 +61,7 @@ public class PokemonDetailsFragment extends Fragment {
         if(savedInstanceState != null) {
             pokemon = savedInstanceState.getParcelable("pokemon");
         }
+
         reinitializeViews();
 
         return view;
@@ -96,4 +97,5 @@ public class PokemonDetailsFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable("pokemon", pokemon);
     }
+
 }

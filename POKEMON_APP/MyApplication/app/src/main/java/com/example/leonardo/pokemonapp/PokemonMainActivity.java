@@ -60,6 +60,7 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main_pokemon);
 
         ButterKnife.bind(this);
@@ -127,7 +128,7 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
         boolean internetActionActive = UserUtil.internetConnectionActive();
 
         if(!internetActionActive) {
-            Toast.makeText(this, "No internet connectivity", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Offline mode, you can not log out from the server.", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -136,7 +137,8 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
             public void onSuccess(Object object) {
                 UserUtil.logOutUser();
                 Intent intent = new Intent(PokemonMainActivity.this, RegisterActivity.class);
-                startActivity(intent);
+                intent.putExtra("logOutPressed", true);
+                setResult(RESULT_OK, intent);
                 finish();
             }
 
@@ -190,6 +192,11 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
 
         switch (item.getItemId()){
             case R.id.action_add_pokemon:
+                if(!UserUtil.internetConnectionActive()) {
+                    Toast.makeText(this, "No internet connection, you can not add new pokemon", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+
                 insertPokemonAddFragmentToActivity();
                 return true;
             case android.R.id.home:
@@ -222,9 +229,11 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
 
     @Override
     public void onBackPressed() {
-       if(!fragmentHandler.onBackPressed()) {
-           super.onBackPressed();
-       }
+        if(!fragmentHandler.onBackPressed()) {
+            setResult(RESULT_CANCELED);
+            finish();
+        }
+
     }
 
     @Override
@@ -263,7 +272,7 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         NetworkExecutor.getInstance().destroyAnyPendingTransactions();
     }
+
 }

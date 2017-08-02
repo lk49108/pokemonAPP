@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.UI.PasswordMatcherView;
 import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
 import com.example.leonardo.pokemonapp.network.resources.User;
 import com.example.leonardo.pokemonapp.util.UserUtil;
@@ -35,10 +36,8 @@ public class SignUpFragment extends Fragment {
     EditText fragmentSignUpEmailEditText;
     @BindView(R.id.fragment_sign_up_username_edit_text)
     EditText fragmentSignUpUsernameEditText;
-    @BindView(R.id.fragment_sign_up_password_edit_text)
-    EditText fragmentSignUpPasswordEditText;
-    @BindView(R.id.fragment_sign_up_password_confirmation_edit_text)
-    EditText fragmentSignUpPasswordConfirmationEditText;
+    @BindView(R.id.fragment_sign_up_password_matcher)
+    PasswordMatcherView passwordMatcher;
     @BindView(R.id.fragment_sign_up_button)
     Button fragmentSignUpButton;
 
@@ -63,8 +62,8 @@ public class SignUpFragment extends Fragment {
         User user = new User();
         user.setEmail(fragmentSignUpEmailEditText.getText().toString());
         user.setUserName(fragmentSignUpUsernameEditText.getText().toString());
-        user.setPassword(fragmentSignUpPasswordEditText.getText().toString());
-        user.setConfirmationPassword(fragmentSignUpPasswordConfirmationEditText.getText().toString());
+        user.setPassword(passwordMatcher.getPassword());
+        user.setConfirmationPassword(passwordMatcher.getPassword());
 
         listener.signUp(user);
     }
@@ -72,10 +71,8 @@ public class SignUpFragment extends Fragment {
     private boolean checkDataValidityLocaly() {
         final String email = fragmentSignUpEmailEditText.getText().toString();
         final String userName = fragmentSignUpUsernameEditText.getText().toString();
-        final String password = fragmentSignUpPasswordEditText.getText().toString();
-        final String confPassword = fragmentSignUpPasswordConfirmationEditText.getText().toString();
 
-        if(email.isEmpty() || userName.isEmpty() || password.isEmpty() || confPassword.isEmpty()) {
+        if(email.isEmpty() || userName.isEmpty() || passwordMatcher.isEmpty()) {
             errorMessage = "No empty fields allowed";
             return false;
         }
@@ -84,19 +81,14 @@ public class SignUpFragment extends Fragment {
             errorMessage = "Email is not valid";
             return false;
         }
-        
-        if(password.isEmpty()) {
-            errorMessage = "Password can not be mepty";
-            return false;
-        }
 
-        if(password.length() < 8) {
-            errorMessage = "Password should be at least 8 characters long";
-            return false;
-        }
-
-        if (!password.equals(confPassword)) {
+        if (!passwordMatcher.passwordsValid()) {
             errorMessage = "Passwords do not match";
+            return false;
+        }
+
+        if(passwordMatcher.length() < 8) {
+            errorMessage = "Password should be at least 8 characters long";
             return false;
         }
 
@@ -150,8 +142,8 @@ public class SignUpFragment extends Fragment {
     private void restoreInstanceState(Bundle savedInstanceState) {
         fragmentSignUpEmailEditText.setText(savedInstanceState.getString("email"));
         fragmentSignUpUsernameEditText.setText(savedInstanceState.getString("userName"));
-        fragmentSignUpPasswordEditText.setText(savedInstanceState.getString("password"));
-        fragmentSignUpPasswordConfirmationEditText.setText(savedInstanceState.getString("confirmationPassword"));
+        passwordMatcher.setPasswordText(savedInstanceState.getString("password"));
+        passwordMatcher.setPasswordConfirmationText(savedInstanceState.getString("confirmationPassword"));
     }
 
     @Override
@@ -167,8 +159,8 @@ public class SignUpFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putString("email", fragmentSignUpEmailEditText.getText().toString());
         outState.putString("userName", fragmentSignUpUsernameEditText.getText().toString());
-        outState.putString("password", fragmentSignUpPasswordEditText.getText().toString());
-        outState.putString("confirmationPassword", fragmentSignUpPasswordConfirmationEditText.getText().toString());
+        outState.putString("password", passwordMatcher.getPasswordText());
+        outState.putString("confirmationPassword", passwordMatcher.getPasswordConfirmationText());
     }
 
     @Override

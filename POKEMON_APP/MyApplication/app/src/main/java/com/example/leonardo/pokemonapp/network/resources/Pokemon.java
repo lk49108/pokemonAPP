@@ -3,8 +3,20 @@ package com.example.leonardo.pokemonapp.network.resources;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
+import com.example.leonardo.pokemonapp.database.model.PokemonDb;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.Database;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.AsyncModel;
+import com.raizlabs.android.dbflow.structure.BaseModel;
+import com.raizlabs.android.dbflow.structure.Model;
+import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
 import com.squareup.moshi.Json;
+
+import java.util.List;
 
 import moe.banana.jsonapi2.JsonApi;
 import moe.banana.jsonapi2.Resource;
@@ -33,10 +45,24 @@ public class Pokemon extends Resource implements Parcelable {
     @Json(name = "category")
     private String category;
 
-    @Json(name = "gender")
+    @Json(name = "abilities")
     private String abilities;
 
+    @Json(name = "gender")
+    private final String gender = "Male";
+
+    @Json(name = "gender_id")
+    private  final int genderId = 1;
+
     public Pokemon() {
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public int getGenderId() {
+        return genderId;
     }
 
     public Uri getImageSource() {
@@ -55,7 +81,26 @@ public class Pokemon extends Resource implements Parcelable {
         this.category = category;
         this.abilities = abilities;
         this.imageSource = imageSource;
+    }
 
+    public static Pokemon fromPokemonDb(PokemonDb pokemon) {
+        return new Pokemon(
+                pokemon.getName(),
+                pokemon.getDescription(),
+                pokemon.getHeight(),
+                pokemon.getWeight(),
+                pokemon.getCategory(),
+                pokemon.getAbilities(),
+                pokemon.getImageSource());
+    }
+
+    public static Pokemon[] fromPokemonDbList(List<PokemonDb> pokemon) {
+        Pokemon[] pokemons = new Pokemon[pokemon.size()];
+        for(int i = 0; i < pokemons.length; i++) {
+            pokemons[i] = fromPokemonDb(pokemon.get(i));
+        }
+
+        return pokemons;
     }
 
     public void setName(String name) {
@@ -135,6 +180,8 @@ public class Pokemon extends Resource implements Parcelable {
         category = data[4];
         abilities = data[5];
         imageSource = (data[6] == null) ? null : Uri.parse(data[6]);
+
+
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
@@ -147,4 +194,5 @@ public class Pokemon extends Resource implements Parcelable {
             return new Pokemon[size];
         }
     };
+
 }

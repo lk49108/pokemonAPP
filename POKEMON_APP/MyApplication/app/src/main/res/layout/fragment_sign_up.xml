@@ -74,63 +74,14 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:id="@+id/fragment_sign_up_ll3"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="5dp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+            <com.example.leonardo.pokemonapp.UI.PasswordMatcherView
+                android:id="@+id/fragment_sign_up_password_matcher"
                 app:layout_constraintTop_toBottomOf="@+id/fragment_sign_up_ll2"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent">
-
-                <ImageView
-                    android:layout_marginRight="20dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_lock"/>
-
-                <EditText
-                    android:id="@+id/fragment_sign_up_password_edit_text"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:inputType="textPassword"
-                    android:hint="@string/passwordHint"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="5dp"
+                app:layout_constraintRight_toRightOf="parent"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/fragment_sign_up_ll3"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent">
-
-                <ImageView
-                    android:visibility="invisible"
-                    android:layout_marginRight="20dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_lock"/>
-
-                <EditText
-                    android:id="@+id/fragment_sign_up_password_confirmation_edit_text"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword" />
-
-            </LinearLayout>
-
+                android:layout_height="wrap_content">
+            </com.example.leonardo.pokemonapp.UI.PasswordMatcherView>
 
         </android.support.constraint.ConstraintLayout>
 

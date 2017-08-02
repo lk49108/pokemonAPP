@@ -3,12 +3,15 @@ package com.example.leonardo.pokemonapp.fragmentHandler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.PokemonAddFragment;
 import com.example.leonardo.pokemonapp.PokemonDetailsFragment;
 import com.example.leonardo.pokemonapp.PokemonListFragment;
 import com.example.leonardo.pokemonapp.PokemonMainActivity;
+import com.example.leonardo.pokemonapp.util.UserUtil;
 
 /**
  * Created by leonardo on 21/07/17.
@@ -24,8 +27,10 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
 
     @Override
     public void initializeFragments() {
+        Log.d("iniciajliziram", "inicijalizacija");
+
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        transaction.add(activity.pokemonMainFragmentContainer.getId(), PokemonListFragment.newInstance(), "listFragment");
+        transaction.replace(activity.pokemonMainFragmentContainer.getId(), PokemonListFragment.newInstance(), "listFragment");
         transaction.commit();
     }
 
@@ -81,8 +86,12 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
         FragmentManager manager = activity.getSupportFragmentManager();
         manager.popBackStackImmediate();
 
-        PokemonListFragment listFragment = (PokemonListFragment) manager.findFragmentByTag("listFragment");
-        listFragment.addPokemon(pokemon);
+        if(!UserUtil.internetConnectionActive()) {
+            Toast.makeText(activity, "No internet connection, you can not add new pokemon", Toast.LENGTH_LONG).show();
+        } else {
+            PokemonListFragment listFragment = (PokemonListFragment) manager.findFragmentByTag("listFragment");
+            listFragment.addPokemon(pokemon);
+        }
 
         activity.invalidateOptionsMenu();
     }
@@ -113,6 +122,8 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
             return true;
         }
 
+        activity.getSupportFragmentManager().executePendingTransactions();
+        activity.getSupportFragmentManager().popBackStackImmediate();
         return false;
     }
 }

@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;
 import com.squareup.picasso.Picasso;
@@ -184,12 +185,29 @@ public class PokemonAddFragment extends Fragment {
     void savePokemon(){
         final String name = fragmentPokemonAddOptionName.getText().toString().trim();
 
-        if(name.isEmpty()) {
-            Toast.makeText(getActivity(), "Pokemon has to have a name.", Toast.LENGTH_LONG).show();
+        if(!valid()) {
             return;
         }
-       Pokemon newPokemon  = createNewPokemon();
+
+        Pokemon newPokemon  = createNewPokemon();
         listener.pokemonAdded(newPokemon);
+    }
+
+    private boolean valid() {
+        final String name = fragmentPokemonAddOptionName.getText().toString().trim();
+        final String description = fragmentPokemonAddOptionDescription.getText().toString().trim();
+        final String height = fragmentPokemonAddOptionHeight.getText().toString().trim();
+        final String weight = fragmentPokemonAddOptionWeight.getText().toString().trim();
+        final String category = fragmentPokemonAddOptionCategory.getText().toString().trim();
+        final String abilities = fragmentPokemonAddOptionAbilities.getText().toString().trim();
+
+        if (name.isEmpty() || description.isEmpty() || height.isEmpty() || weight.isEmpty() || category.isEmpty()
+                || abilities.isEmpty()) {
+            Toast.makeText(getActivity(), "All options have to be filled in.", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        return true;
     }
 
     private Pokemon createNewPokemon() {
@@ -295,6 +313,7 @@ public class PokemonAddFragment extends Fragment {
             }
 
             if(photoFile != null) {
+                NetworkExecutor.imageFile = photoFile;
                 Uri photoUri = FileProvider.getUriForFile(getActivity(),
                         "com.pokemon.android.fileprovider",
                         photoFile);
@@ -366,7 +385,7 @@ public class PokemonAddFragment extends Fragment {
     }
 
     public boolean shouldShowSavePokemonDialog() {
-        if(!fragmentPokemonAddOptionName.getText().toString().isEmpty()) {
+        if(valid()) {
             return true;
         }
         return false;
