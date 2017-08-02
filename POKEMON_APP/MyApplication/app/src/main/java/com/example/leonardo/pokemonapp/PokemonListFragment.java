@@ -35,7 +35,6 @@ import butterknife.ButterKnife;
 public class PokemonListFragment extends Fragment {
 
     private int i;
-    private volatile boolean successedToDownloadPokemons;
 
     private static final String SAVE_INSTANCE_STATE_EXISTING_POKEMONS_KEY = "pokemons.list.fragment.save.instance.state.key";
 
@@ -60,7 +59,8 @@ public class PokemonListFragment extends Fragment {
     }
 
     public static PokemonListFragment newInstance() {
-        return new PokemonListFragment();
+        PokemonListFragment fragment = new PokemonListFragment();
+        return fragment;
     }
 
     private SQLitePokedex pokedex;
@@ -92,7 +92,11 @@ public class PokemonListFragment extends Fragment {
             pokemonListAdapter = new PokemonListAdapter(this);
             configureRecyclerViewBehaviour();
             Pokemon[] pokemons = (Pokemon[])savedInstanceState.getParcelableArray(SAVE_INSTANCE_STATE_EXISTING_POKEMONS_KEY);
-            pokemonListAdapter.addAll(pokemons);
+            if(pokemons.length == 0) {
+                getPokemons();
+            } else {
+                pokemonListAdapter.addAll(pokemons);
+            }
         } else if(pokemonListAdapter == null){
             pokemonListAdapter = new PokemonListAdapter(this);
             configureRecyclerViewBehaviour();
@@ -118,38 +122,57 @@ public class PokemonListFragment extends Fragment {
     private void downloadPokemons(boolean refreshing) {
         //Download from internet service
 
-        for(i = 0; i < 3; i++) {
-            NetworkExecutor.getInstance().getAllPokemons(new CallbackInt() {
-                @Override
-                public void onSuccess(Object object) {
-                    if(refreshing) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-
-                    if(successedToDownloadPokemons) {
-                        return;
-                    }
-                    successedToDownloadPokemons = true;
-                    Pokemon[] pokemons = (Pokemon[]) object;
-
-                    pokemonListAdapter = new PokemonListAdapter(PokemonListFragment.this);
-                    pokemonListAdapter.addAll(pokemons);
-                    recyclerView.setAdapter(pokemonListAdapter);
-
-                    switchFragmentLayout();
-
-                    refreshCaching();
+        NetworkExecutor.getInstance().getAllPokemons(new CallbackInt() {
+            @Override
+            public void onSuccess(Object object) {
+                if(refreshing) {
+                    swipeRefreshLayout.setRefreshing(false);
                 }
 
-                @Override
-                public void onFailure(String message) {
-                    if(i == 2) {
-                        Toast.makeText(getActivity(), "Failed to download pokemons", Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
-        }
+                Pokemon[] pokemons = (Pokemon[]) object;
 
+                pokemonListAdapter = new PokemonListAdapter(PokemonListFragment.this);
+                pokemonListAdapter.addAll(pokemons);
+                recyclerView.setAdapter(pokemonListAdapter);
+
+                switchFragmentLayout();
+
+                refreshCaching();
+            }
+
+            @Override
+            public void onFailure(String message) {
+                retryDownloadingPokemons(false);
+            }
+        });
+
+
+    }
+
+    private void retryDownloadingPokemons(boolean refreshing) {
+        NetworkExecutor.getInstance().getAllPokemons(new CallbackInt() {
+            @Override
+            public void onSuccess(Object object) {
+                if(refreshing) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+
+                Pokemon[] pokemons = (Pokemon[]) object;
+
+                pokemonListAdapter = new PokemonListAdapter(PokemonListFragment.this);
+                pokemonListAdapter.addAll(pokemons);
+                recyclerView.setAdapter(pokemonListAdapter);
+
+                switchFragmentLayout();
+
+                refreshCaching();
+            }
+
+            @Override
+            public void onFailure(String message) {
+                Toast.makeText(getActivity(), "Failed to download pokemons", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void refreshCaching() {
@@ -242,7 +265,6 @@ public class PokemonListFragment extends Fragment {
                 return;
             }
 
-            successedToDownloadPokemons = false;
             downloadPokemons(true);
 
         }

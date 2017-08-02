@@ -4,12 +4,12 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,11 +45,12 @@ public class LogInFragment extends Fragment {
     private boolean pokeBallAnimatorFinished;
     private boolean finished;
 
+    private long pokeBallAnimationStatus;
+    private long pokemonLogoAnimationStatus;
+
     ObjectAnimator pokemonLogoAnimator;
     ObjectAnimator pokeBallAnimatorX;
     ObjectAnimator pokeBallAnimatorY;
-
-    private boolean firstTime = true;
 
     @BindView(R.id.log_in_fragment_scroll_view)
     ScrollView scrollView;
@@ -128,7 +129,7 @@ public class LogInFragment extends Fragment {
 
         void signUpInsteadOfLogIn();
 
-        void finish();
+        void finishActivity();
 
     }
 
@@ -161,17 +162,6 @@ public class LogInFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
-        final ViewTreeObserver observer = view.getViewTreeObserver();
-
-        observer.addOnGlobalLayoutListener(() -> {
-            if(firstTime) {
-                firstTime = false;
-                animate(savedInstanceState);
-            } else {
-                firstTime = true;
-            }
-        });
-
         if(savedInstanceState != null) {
             restoreInstanceState(savedInstanceState);
         }
@@ -179,8 +169,15 @@ public class LogInFragment extends Fragment {
         return view;
     }
 
-    private void animate(Bundle savedInstanceState) {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        animate();
+    }
+
+    private void animate() {
         if(finished) {
+            pokemonLogo.setVisibility(View.VISIBLE);
             scrollView.setScrollContainer(true);
             ll2.setVisibility(View.VISIBLE);
             logInButton.setVisibility(View.VISIBLE);
@@ -190,13 +187,11 @@ public class LogInFragment extends Fragment {
             return;
         }
 
-        if(savedInstanceState != null) {
-            if(savedInstanceState.getBoolean("finished")) {
-                return;
-            }
-        }
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
 
-        pokemonLogoAnimator = ObjectAnimator.ofFloat(pokemonLogo, "translationY", root.getHeight() / 1.7f, 0);
+        pokemonLogoAnimator = ObjectAnimator.ofFloat(pokemonLogo, "translationY", height, 0);
         pokeBallAnimatorX = ObjectAnimator.ofFloat(pokeBall, "scaleX", 0f, 1f);
         pokeBallAnimatorY = ObjectAnimator.ofFloat(pokeBall, "scaleY", 0f, 1f);
 
@@ -204,16 +199,14 @@ public class LogInFragment extends Fragment {
         pokeBallAnimatorX.setDuration(1000);
         pokeBallAnimatorY.setDuration(1000);
 
-        if(savedInstanceState != null) {
-            pokemonLogoAnimator.setCurrentPlayTime(savedInstanceState.getLong("pokemonLogoAnimationStatus") == -1 ? 3500 : savedInstanceState.getLong("pokemonLogoAnimationStatus"));
-            pokeBallAnimatorX.setCurrentPlayTime(savedInstanceState.getLong("pokeBallAnimationStatus") == -1 ? 3000 : savedInstanceState.getLong("pokeBallAnimationStatus"));
-            pokeBallAnimatorY.setCurrentPlayTime(savedInstanceState.getLong("pokeBallAnimationStatus") == -1 ? 3000 : savedInstanceState.getLong("pokeBallAnimationStatus"));
-        }
+        pokemonLogoAnimator.setCurrentPlayTime(pokemonLogoAnimationStatus == -1 ? 3500 : pokemonLogoAnimationStatus);
+        pokeBallAnimatorX.setCurrentPlayTime(pokeBallAnimationStatus == -1 ? 3000 : pokeBallAnimationStatus);
+        pokeBallAnimatorY.setCurrentPlayTime(pokeBallAnimationStatus == -1 ? 3000 : pokeBallAnimationStatus);
 
         pokemonLogoAnimator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-
+                pokemonLogo.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -242,7 +235,7 @@ public class LogInFragment extends Fragment {
             @Override
             public void onAnimationEnd(Animator animation) {
                 if(UserUtil.loggedIn()) {
-                    listener.finish();
+                    listener.finishActivity();
                     return;
                 }
                 scrollView.setScrollContainer(true);
@@ -273,6 +266,9 @@ public class LogInFragment extends Fragment {
     private void restoreInstanceState(Bundle savedInstanceState) {
         emailView.setText(savedInstanceState.getString("email"));
         passwordView.setText(savedInstanceState.getString("password"));
+        finished = savedInstanceState.getBoolean("animationFinished");
+        pokeBallAnimationStatus = savedInstanceState.getLong("pokeBallAnimationStatus");
+        pokemonLogoAnimationStatus = savedInstanceState.getLong("pokemonLogoAnimationStatus");
     }
 
     @Override
@@ -293,7 +289,6 @@ public class LogInFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         NetworkExecutor.getInstance().destroyAnyPendingTransactions();
     }
 }

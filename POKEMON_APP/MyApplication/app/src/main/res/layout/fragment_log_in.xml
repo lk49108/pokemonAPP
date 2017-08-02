@@ -22,6 +22,7 @@
             android:layout_height="match_parent">
 
             <ImageView
+                android:visibility="invisible"
                 android:id="@+id/fragment_log_in_pokemon_logo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

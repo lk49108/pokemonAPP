@@ -3,6 +3,7 @@ package com.example.leonardo.pokemonapp.fragmentHandler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
@@ -26,8 +27,10 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
 
     @Override
     public void initializeFragments() {
+        Log.d("iniciajliziram", "inicijalizacija");
+
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        transaction.add(activity.pokemonMainFragmentContainer.getId(), PokemonListFragment.newInstance(), "listFragment");
+        transaction.replace(activity.pokemonMainFragmentContainer.getId(), PokemonListFragment.newInstance(), "listFragment");
         transaction.commit();
     }
 
@@ -119,6 +122,8 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
             return true;
         }
 
+        activity.getSupportFragmentManager().executePendingTransactions();
+        activity.getSupportFragmentManager().popBackStackImmediate();
         return false;
     }
 }

@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -44,9 +45,9 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
     private void initializeLayout() {
         getSupportActionBar().hide();
 
-        Intent intent = getIntent();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(fragmentContainer.getId(), LogInFragment.newInstance(intent.getBooleanExtra("logOutPressed", false))).commit();
+        transaction.replace(fragmentContainer.getId(), LogInFragment.newInstance(false)).commit();
+
     }
 
     @Override
@@ -60,22 +61,12 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
     }
 
     @Override
-    public void onBackPressed() {
-        if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            getSupportFragmentManager().popBackStackImmediate();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
     public void logIn(User user) {
         NetworkExecutor.getInstance().logIn(user, new CallbackInt() {
             @Override
             public void onSuccess(Object object) {
                 Intent intent = new Intent(RegisterActivity.this, PokemonMainActivity.class);
-                startActivity(intent);
-                finish();
+                startActivityForResult(intent, 20);
             }
 
             @Override
@@ -95,9 +86,10 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
     }
 
     @Override
-    public void finish() {
+    public void finishActivity() {
+        Log.d("logIn", "finishing");
         Intent intent = new Intent(this, PokemonMainActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 20);
     }
 
 
@@ -106,9 +98,9 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
         NetworkExecutor.getInstance().signUp(user, new CallbackInt() {
             @Override
             public void onSuccess(Object object) {
+                Log.d("logIn", "signup");
                 Intent intent = new Intent(RegisterActivity.this, PokemonMainActivity.class);
-                startActivity(intent);
-                finish();
+                startActivityForResult(intent, 20);
             }
 
             @Override
@@ -123,5 +115,15 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
     protected void onDestroy() {
         super.onDestroy();
         NetworkExecutor.getInstance().destroyAnyPendingTransactions();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_CANCELED) {
+            finish();
+        } else if (resultCode == RESULT_OK) {
+            //FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            //transaction.replace(fragmentContainer.getId(), LogInFragment.newInstance(data.getBooleanExtra("logOutPressed", false))).commit();
+        }
     }
 }

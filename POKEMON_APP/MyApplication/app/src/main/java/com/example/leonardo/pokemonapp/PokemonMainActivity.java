@@ -60,6 +60,7 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main_pokemon);
 
         ButterKnife.bind(this);
@@ -137,7 +138,7 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
                 UserUtil.logOutUser();
                 Intent intent = new Intent(PokemonMainActivity.this, RegisterActivity.class);
                 intent.putExtra("logOutPressed", true);
-                startActivity(intent);
+                setResult(RESULT_OK, intent);
                 finish();
             }
 
@@ -228,9 +229,11 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
 
     @Override
     public void onBackPressed() {
-       if(!fragmentHandler.onBackPressed()) {
-           super.onBackPressed();
-       }
+        if(!fragmentHandler.onBackPressed()) {
+            setResult(RESULT_CANCELED);
+            finish();
+        }
+
     }
 
     @Override
@@ -269,7 +272,7 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         NetworkExecutor.getInstance().destroyAnyPendingTransactions();
     }
+
 }

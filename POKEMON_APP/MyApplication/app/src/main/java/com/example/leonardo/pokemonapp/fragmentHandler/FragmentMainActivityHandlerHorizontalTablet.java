@@ -27,8 +27,8 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
     @Override
     public void initializeFragments() {
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        transaction.add(activity.pokemonMainFragmentContainer.getId(), PokemonListFragment.newInstance(), "listFragment");
-        transaction.add(activity.pokemonAddDetailFragmentContainer.getId(), PokemonAddFragment.newInstance(), "addPokemonFragment");
+        transaction.replace(activity.pokemonMainFragmentContainer.getId(), PokemonListFragment.newInstance(), "listFragment");
+        transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), PokemonAddFragment.newInstance(), "addPokemonFragment");
         transaction.commit();
     }
 
