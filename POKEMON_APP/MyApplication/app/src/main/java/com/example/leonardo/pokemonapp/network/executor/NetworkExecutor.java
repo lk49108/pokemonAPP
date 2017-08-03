@@ -1,6 +1,7 @@
 package com.example.leonardo.pokemonapp.network.executor;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
@@ -14,6 +15,7 @@ import com.example.leonardo.pokemonapp.network.services.PokemonService;
 import com.example.leonardo.pokemonapp.network.services.UserService;
 import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;
 import com.example.leonardo.pokemonapp.util.UserUtil;
+import com.squareup.picasso.Picasso;
 
 
 import java.io.File;
@@ -185,7 +187,10 @@ public class NetworkExecutor {
         PokemonService pokeService = ServiceCreator.getPokemonService();
 
         RequestBody requestBody = createRequestBodyWithImageToBeSent(pokemon, context);
-        Call<Pokemon> call = pokeService.createPokemon(getAuthenticationString(), pokemon.getName(), pokemon.getHeight(), pokemon.getWeight(), pokemon.getGenderId(), pokemon.getDescription(), requestBody);
+        Call<Pokemon> call = pokeService
+                .createPokemon(getAuthenticationString(), pokemon.getName(),
+                        12, 12, false, 1, pokemon.getDescription(),
+                        new int[0], new int[0], requestBody);
 
         pendingCall = call;
 
@@ -218,21 +223,27 @@ public class NetworkExecutor {
             return null;
         }
 
-        byte[] imageByteArray = PokemonResourcesUtil.readImageFile(imageUri, context);
-/*
-        RequestBody filePart = RequestBody.create(
-                MediaType.parse(context.getContentResolver().getType(imageUri)),
-                imageByteArray
-        );
-*/
-        RequestBody filePart = RequestBody.create(MediaType.parse("image/jpg"), imageFile);
+        String filePathString = getPath(imageUri, context);
+        if(filePathString == null) {
+            return null;
+        }
 
-        //MultipartBody.Part file = MultipartBody.Part.createFormData(
-          //      "photo", "pokemonImage.jpg", filePart
-        //);
+        File file = new File(filePathString);
+
+        RequestBody filePart = RequestBody.create(MediaType.parse("image/*"), file);
 
         return filePart;
-        //return file;
+    }
+
+    private String getPath(Uri imageUri, Context context) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver().query(imageUri, proj, null, null, null);
+        int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+        if(columnIndex == -1) {
+            return null;
+        }
+        cursor.moveToFirst();
+        return  cursor.getString(columnIndex);
     }
 
 }

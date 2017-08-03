@@ -27,10 +27,13 @@ public interface PokemonService {
     @POST("/api/v1/pokemons")
     Call<Pokemon> createPokemon(@Header("Authorization") String authHeader,
                                 @Part(value = "data[attributes][name]", encoding = "text/plain") String name,
-                                @Part(value = "data[attributes][height]", encoding = "text/plain") String height,
-                                @Part(value = "data[attributes][weight]", encoding = "text/plain") String weight,
-                                @Part(value = "data[attributes][gender_id]") int genderId,
+                                @Part("data[attributes][height]") double height,
+                                @Part("data[attributes][weight]") double weight,
+                                @Part("data[attributes][is_default]") boolean isDefault,
+                                @Part("data[attributes][gender_id]") int genderId,
                                 @Part(value = "data[attributes][description]", encoding = "text/plain") String description,
-                                @Part(value = "data[attributes][image]\" filename=\"pokemon.jpg") RequestBody image);
-
+                                @Part("data[attributes][type_ids][]") int[] category,
+                                @Part("data[attributes][move_ids][]") int[] moves,
+                                @Part("data[attributes][image]\"; filename=\"pokemon.jpg") RequestBody image);
 }
+
