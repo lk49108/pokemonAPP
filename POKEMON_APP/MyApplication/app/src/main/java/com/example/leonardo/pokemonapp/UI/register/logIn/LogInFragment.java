@@ -1,20 +1,16 @@
-package com.example.leonardo.pokemonapp;
+package com.example.leonardo.pokemonapp.UI.register.logIn;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,24 +18,25 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.R;
+import com.example.leonardo.pokemonapp.UI.register.RegisterActivity;
+import com.example.leonardo.pokemonapp.base.BaseFragment;
 import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
 import com.example.leonardo.pokemonapp.network.resources.User;
+import com.example.leonardo.pokemonapp.util.StateUtil;
 import com.example.leonardo.pokemonapp.util.UserUtil;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import moe.banana.jsonapi2.Document;
-import moe.banana.jsonapi2.ResourceAdapterFactory;
 
 /**
  * Created by leonardo on 23/07/17.
  */
 
-public class LogInFragment extends Fragment {
+public class LogInFragment extends BaseFragment implements LogInMVP.View {
+
+    private LogInMVP.Presenter presenter;
 
     private boolean pokemonLogoAnimatorFinished;
     private boolean pokeBallAnimatorFinished;
@@ -69,9 +66,9 @@ public class LogInFragment extends Fragment {
     @BindView(R.id.fragment_log_in_sign_up_button)
     Button signUpButton;
     @BindView(R.id.fragment_log_in_pokemon_logo)
-    ImageView pokemonLogo;
+    public ImageView pokemonLogo;
     @BindView(R.id.fragment_log_in_poke_ball)
-    ImageView pokeBall;
+    public ImageView pokeBall;
 
     private String errorMessage;
 
@@ -123,6 +120,23 @@ public class LogInFragment extends Fragment {
         listener.signUpInsteadOfLogIn();
     }
 
+
+    @Override
+    public void showAnimation(AnimatorSet set) {
+
+    }
+
+    @Override
+    public void setEmail(String email) {
+
+    }
+
+    @Override
+    public void setPassword(String password) {
+
+    }
+
+
     public interface LogInFragmentListener {
 
         void logIn(User user);
@@ -148,11 +162,14 @@ public class LogInFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if(context instanceof RegisterActivity) {
-            listener = (LogInFragmentListener) context;
-        } else {
-            throw new RuntimeException(context.toString() + " must implement LogInFragmentListener");
-        }
+        presenter.onAttach(context);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        presenter = new LogInPresenterImpl(this);
     }
 
     @Nullable
@@ -162,9 +179,10 @@ public class LogInFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
-        if(savedInstanceState != null) {
-            restoreInstanceState(savedInstanceState);
-        }
+        //if(savedInstanceState != null) {
+          //  restoreInstanceState(savedInstanceState);
+        //}
+        presenter.subscribe(savedInstanceState == null ? null : StateUtil.readFromBundle(savedInstanceState));
 
         return view;
     }

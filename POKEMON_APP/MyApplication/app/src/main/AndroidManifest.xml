@@ -27,7 +27,7 @@
         </provider>
 
         <activity android:name=".PokemonMainActivity"></activity>
-        <activity android:name=".RegisterActivity">
+        <activity android:name=".UI.register.RegisterActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

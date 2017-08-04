@@ -1,8 +1,6 @@
-package com.example.leonardo.pokemonapp;
+package com.example.leonardo.pokemonapp.UI.register;
 
 import android.content.Intent;
-import android.os.PersistableBundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,10 +10,13 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.UI.register.logIn.LogInFragment;
+import com.example.leonardo.pokemonapp.PokemonMainActivity;
+import com.example.leonardo.pokemonapp.R;
+import com.example.leonardo.pokemonapp.UI.register.signUp.SignUpFragment;
 import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
 import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
 import com.example.leonardo.pokemonapp.network.resources.User;
-import com.example.leonardo.pokemonapp.util.UserUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
