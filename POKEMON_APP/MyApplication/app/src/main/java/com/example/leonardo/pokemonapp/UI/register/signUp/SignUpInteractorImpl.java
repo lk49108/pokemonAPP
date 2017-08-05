@@ -1,27 +1,27 @@
-package com.example.leonardo.pokemonapp.UI.register.logIn;
+package com.example.leonardo.pokemonapp.UI.register.signUp;
 
 import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
 import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
 import com.example.leonardo.pokemonapp.network.resources.User;
 
 /**
- * Created by leonardo on 04/08/17.
+ * Created by leonardo on 05/08/17.
  */
 
-public class LogInInteractorImpl implements LogInMVP.Interactor {
-
+public class SignUpInteractorImpl implements SignUpMVP.Interactor {
     @Override
     public void cancel() {
         NetworkExecutor.getInstance().destroyAnyPendingTransactions();
     }
 
     @Override
-    public void logIn(String email, String password, CallbackInt callback) {
+    public void SignUp(String email, String username, String password, String confPassword, CallbackInt callback) {
         User user = new User();
         user.setEmail(email);
+        user.setUserName(username);
         user.setPassword(password);
+        user.setConfirmationPassword(confPassword);
 
-        NetworkExecutor.getInstance().logIn(user, callback);
+        NetworkExecutor.getInstance().signUp(user, callback);
     }
-
 }

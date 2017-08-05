@@ -1,4 +1,4 @@
-package com.example.leonardo.pokemonapp.UI;
+package com.example.leonardo.pokemonapp.UI.customViews;
 
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
@@ -30,6 +30,7 @@ public class PasswordMatcherView extends ConstraintLayout {
 
     public PasswordMatcherView(Context context) {
         super(context);
+        init();
     }
 
     public PasswordMatcherView(Context context, AttributeSet attrs) {

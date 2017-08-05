@@ -1,4 +1,4 @@
-package com.example.leonardo.pokemonapp;
+package com.example.leonardo.pokemonapp.UI.pokemon.pokemonList.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.leonardo.pokemonapp.util.CircleTransformation;
+import com.example.leonardo.pokemonapp.R;
+import com.example.leonardo.pokemonapp.UI.pokemon.pokemonList.PokemonListFragment;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;
 import com.squareup.picasso.Picasso;

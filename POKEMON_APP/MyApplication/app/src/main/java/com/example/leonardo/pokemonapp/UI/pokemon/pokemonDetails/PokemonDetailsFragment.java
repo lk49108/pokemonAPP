@@ -1,4 +1,4 @@
-package com.example.leonardo.pokemonapp;
+package com.example.leonardo.pokemonapp.UI.pokemon.pokemonDetails;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.leonardo.pokemonapp.R;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;
 import com.squareup.picasso.Picasso;

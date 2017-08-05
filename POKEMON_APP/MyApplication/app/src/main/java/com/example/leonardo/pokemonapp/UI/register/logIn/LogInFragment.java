@@ -1,13 +1,9 @@
 package com.example.leonardo.pokemonapp.UI.register.logIn;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,44 +11,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.R;
-import com.example.leonardo.pokemonapp.UI.register.RegisterActivity;
+import com.example.leonardo.pokemonapp.UI.register.EditTextWithSwitchingTextVisibility;
 import com.example.leonardo.pokemonapp.base.BaseFragment;
-import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
-import com.example.leonardo.pokemonapp.network.resources.User;
+import com.example.leonardo.pokemonapp.util.LogInAnimation;
 import com.example.leonardo.pokemonapp.util.StateUtil;
-import com.example.leonardo.pokemonapp.util.UserUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
 
 /**
  * Created by leonardo on 23/07/17.
  */
 
-public class LogInFragment extends BaseFragment implements LogInMVP.View {
+public class LogInFragment extends BaseFragment implements LogInMVP.View, EditTextWithSwitchingTextVisibility.OnDrawableClickedListener {
 
     private LogInMVP.Presenter presenter;
 
-    private boolean pokemonLogoAnimatorFinished;
-    private boolean pokeBallAnimatorFinished;
-    private boolean finished;
-
-    private long pokeBallAnimationStatus;
-    private long pokemonLogoAnimationStatus;
-
-    ObjectAnimator pokemonLogoAnimator;
-    ObjectAnimator pokeBallAnimatorX;
-    ObjectAnimator pokeBallAnimatorY;
-
-    @BindView(R.id.log_in_fragment_scroll_view)
-    ScrollView scrollView;
-    @BindView(R.id.fragment_log_in_root_element)
-    View root;
     @BindView(R.id.fragment_log_in_ll2)
     LinearLayout ll2;
     @BindView(R.id.fragment_log_in_ll)
@@ -60,7 +38,7 @@ public class LogInFragment extends BaseFragment implements LogInMVP.View {
     @BindView(R.id.fragment_log_in_email_edit_text)
     EditText emailView;
     @BindView(R.id.fragment_log_in_password_edit_text)
-    EditText passwordView;
+    EditTextWithSwitchingTextVisibility passwordView;
     @BindView(R.id.fragment_log_in_log_in_button)
     Button logInButton;
     @BindView(R.id.fragment_log_in_sign_up_button)
@@ -70,49 +48,9 @@ public class LogInFragment extends BaseFragment implements LogInMVP.View {
     @BindView(R.id.fragment_log_in_poke_ball)
     public ImageView pokeBall;
 
-    private String errorMessage;
-
     @OnClick(R.id.fragment_log_in_log_in_button)
     void logInButton() {
-
-        boolean valid = checkValidityLocaly();
-
-        if(!valid) {
-            Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        if(!UserUtil.internetConnectionActive()) {
-            Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        attemptToLogin();
-    }
-
-    private void attemptToLogin() {
-        User user = new User();
-        user.setEmail(emailView.getText().toString());
-        user.setPassword(passwordView.getText().toString());
-
-        listener.logIn(user);
-    }
-
-    private boolean checkValidityLocaly() {
-        final String email = emailView.getText().toString();
-        final String password = passwordView.getText().toString();
-
-        if(email.isEmpty() || password.isEmpty()) {
-            errorMessage = "No empty fields allowed";
-            return false;
-        }
-
-        if(!UserUtil.validEmail(email)) {
-            errorMessage = "Email is not valid";
-            return false;
-        }
-
-        return true;
+        presenter.onLogInPressed();
     }
 
     @OnClick(R.id.fragment_log_in_sign_up_button)
@@ -120,30 +58,80 @@ public class LogInFragment extends BaseFragment implements LogInMVP.View {
         listener.signUpInsteadOfLogIn();
     }
 
+    @OnTextChanged(R.id.fragment_log_in_email_edit_text)
+    void onEmailTextChanged() {
+        presenter.onEmailTextChanged(emailView.getText().toString());
+    }
+
+    @OnTextChanged(R.id.fragment_log_in_password_edit_text)
+    void onPasswordTextChanged() {
+        presenter.onPasswordTextChange(passwordView.getText().toString());
+    }
 
     @Override
-    public void showAnimation(AnimatorSet set) {
+    public void setListener(LogInFragmentListener listener) {
+        this.listener = listener;
+    }
 
+    @Override
+    public void showAnimation() {
+        LogInAnimation.getInstance(this, (LogInAnimation.LogInAnimationListener) presenter).startAnimation();
+    }
+
+    @Override
+    public void stopAnimation() {
+        LogInAnimation.getInstance(this, (LogInAnimation.LogInAnimationListener) presenter).stopAnimation();
     }
 
     @Override
     public void setEmail(String email) {
-
+        emailView.setText(email);
     }
 
     @Override
     public void setPassword(String password) {
+        passwordView.setText(password);
+    }
+
+    @Override
+    public void switchlayoutVisibility(int visibility) {
+        signUpButton.setVisibility(visibility);
+        logInButton.setVisibility(visibility);
+        ll.setVisibility(visibility);
+        ll2.setVisibility(visibility);
 
     }
 
+    @Override
+    public void switchPokeBallVisibility(int visibility) {
+        pokeBall.setVisibility(visibility);
+    }
+
+    @Override
+    public void switchPokemonLogoVisibility(int visibility) {
+        pokemonLogo.setVisibility(visibility);
+    }
+
+    @Override
+    public void navigateToPokemonListScreen() {
+        listener.navigateToPokemonListScreen();
+    }
+
+    @Override
+    public void setPasswordVisibilityDrawable(int visibilityDrawable) {
+        passwordView.setPasswordVisibilityDrawable(visibilityDrawable);
+    }
+
+    @Override
+    public void onPasswordVissibilityChanged(int drawableId) {
+        presenter.onPasswordVisiblityChange(drawableId);
+    }
 
     public interface LogInFragmentListener {
 
-        void logIn(User user);
-
         void signUpInsteadOfLogIn();
 
-        void finishActivity();
+        void navigateToPokemonListScreen();
 
     }
 
@@ -152,24 +140,16 @@ public class LogInFragment extends BaseFragment implements LogInMVP.View {
     public LogInFragment() {
     }
 
-    public static LogInFragment newInstance(boolean finished) {
-        LogInFragment fragment = new LogInFragment();
-        fragment.finished = finished;
-        return fragment;
+    public static LogInFragment newInstance() {
+        return new LogInFragment();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        presenter.onAttach(context);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         presenter = new LogInPresenterImpl(this);
+        presenter.onAttach(context);
     }
 
     @Nullable
@@ -179,134 +159,36 @@ public class LogInFragment extends BaseFragment implements LogInMVP.View {
 
         ButterKnife.bind(this, view);
 
-        //if(savedInstanceState != null) {
-          //  restoreInstanceState(savedInstanceState);
-        //}
-        presenter.subscribe(savedInstanceState == null ? null : StateUtil.readFromBundle(savedInstanceState));
+        passwordView.setListener(this);
+
+        presenter.subscribe(savedInstanceState == null ? null : StateUtil.readFromLogInBundle(savedInstanceState));
 
         return view;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        animate();
-    }
-
-    private void animate() {
-        if(finished) {
-            pokemonLogo.setVisibility(View.VISIBLE);
-            scrollView.setScrollContainer(true);
-            ll2.setVisibility(View.VISIBLE);
-            logInButton.setVisibility(View.VISIBLE);
-            signUpButton.setVisibility(View.VISIBLE);
-            ll.setVisibility(View.VISIBLE);
-            pokeBall.setVisibility(View.VISIBLE);
-            return;
-        }
-
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = displayMetrics.heightPixels;
-
-        pokemonLogoAnimator = ObjectAnimator.ofFloat(pokemonLogo, "translationY", height, 0);
-        pokeBallAnimatorX = ObjectAnimator.ofFloat(pokeBall, "scaleX", 0f, 1f);
-        pokeBallAnimatorY = ObjectAnimator.ofFloat(pokeBall, "scaleY", 0f, 1f);
-
-        pokemonLogoAnimator.setDuration(1500);
-        pokeBallAnimatorX.setDuration(1000);
-        pokeBallAnimatorY.setDuration(1000);
-
-        pokemonLogoAnimator.setCurrentPlayTime(pokemonLogoAnimationStatus == -1 ? 3500 : pokemonLogoAnimationStatus);
-        pokeBallAnimatorX.setCurrentPlayTime(pokeBallAnimationStatus == -1 ? 3000 : pokeBallAnimationStatus);
-        pokeBallAnimatorY.setCurrentPlayTime(pokeBallAnimationStatus == -1 ? 3000 : pokeBallAnimationStatus);
-
-        pokemonLogoAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                pokemonLogo.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                pokeBall.setVisibility(View.VISIBLE);
-                pokemonLogoAnimatorFinished = true;
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-
-        pokeBallAnimatorX.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if(UserUtil.loggedIn()) {
-                    listener.finishActivity();
-                    return;
-                }
-                scrollView.setScrollContainer(true);
-                pokeBallAnimatorFinished = true;
-                finished = true;
-                ll2.setVisibility(View.VISIBLE);
-                logInButton.setVisibility(View.VISIBLE);
-                signUpButton.setVisibility(View.VISIBLE);
-                ll.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-
-        AnimatorSet animSet = new AnimatorSet();
-        animSet.play(pokeBallAnimatorX).with(pokeBallAnimatorY).after(pokemonLogoAnimator);
-        animSet.start();
-    }
-
-    private void restoreInstanceState(Bundle savedInstanceState) {
-        emailView.setText(savedInstanceState.getString("email"));
-        passwordView.setText(savedInstanceState.getString("password"));
-        finished = savedInstanceState.getBoolean("animationFinished");
-        pokeBallAnimationStatus = savedInstanceState.getLong("pokeBallAnimationStatus");
-        pokemonLogoAnimationStatus = savedInstanceState.getLong("pokemonLogoAnimationStatus");
+    public void onResume() {
+        super.onResume();
+        presenter.onResume();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString("email", emailView.getText().toString());
-        outState.putString("password", passwordView.getText().toString());
-        if(pokemonLogoAnimator == null && pokeBallAnimatorX == null && pokeBallAnimatorY == null) {
-            outState.putLong("pokemonLogoAnimationStatus", -1);
-            outState.putLong("pokeBallAnimationStatus", -1);
-            outState.putBoolean("animationFinished", true);
-            return;
-        }
-        outState.putLong("pokemonLogoAnimationStatus", pokemonLogoAnimatorFinished  ? -1 : pokemonLogoAnimator.getCurrentPlayTime());
-        outState.putLong("pokeBallAnimationStatus", pokeBallAnimatorFinished ? -1 : pokeBallAnimatorX.getCurrentPlayTime());
-        outState.putBoolean("animationFinished", finished);
+        super.onSaveInstanceState(outState);
+
+        StateUtil.writeToBundle(outState, presenter.getState());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.unsubscribe();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        NetworkExecutor.getInstance().destroyAnyPendingTransactions();
+
+        presenter.cancelCall();
     }
 }

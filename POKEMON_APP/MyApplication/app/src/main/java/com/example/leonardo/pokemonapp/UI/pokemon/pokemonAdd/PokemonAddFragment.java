@@ -1,4 +1,4 @@
-package com.example.leonardo.pokemonapp;
+package com.example.leonardo.pokemonapp.UI.pokemon.pokemonAdd;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.R;
 import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;

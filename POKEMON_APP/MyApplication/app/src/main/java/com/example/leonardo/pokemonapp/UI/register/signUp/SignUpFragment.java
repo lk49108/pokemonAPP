@@ -3,7 +3,6 @@ package com.example.leonardo.pokemonapp.UI.register.signUp;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +11,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.R;
-import com.example.leonardo.pokemonapp.UI.PasswordMatcherView;
-import com.example.leonardo.pokemonapp.UI.register.RegisterActivity;
-import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
-import com.example.leonardo.pokemonapp.network.resources.User;
-import com.example.leonardo.pokemonapp.util.UserUtil;
+import com.example.leonardo.pokemonapp.UI.customViews.PasswordMatcherView;
+import com.example.leonardo.pokemonapp.base.BaseFragment;
+import com.example.leonardo.pokemonapp.util.StateUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,9 +23,9 @@ import butterknife.OnClick;
  * Created by leonardo on 23/07/17.
  */
 
-public class SignUpFragment extends Fragment {
+public class SignUpFragment extends BaseFragment implements SignUpMVP.View {
 
-    private String errorMessage;
+    private SignUpMVP.Presenter presenter;
 
     @BindView(R.id.fragment_sign_up_email_edit_text)
     EditText fragmentSignUpEmailEditText;
@@ -41,61 +38,47 @@ public class SignUpFragment extends Fragment {
 
     @OnClick(R.id.fragment_sign_up_button)
     void signUp() {
-        boolean valid = checkDataValidityLocaly();
-
-        if(!valid) {
-            Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        if(!UserUtil.internetConnectionActive()) {
-            Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        attemptToSignUp();
+        presenter.onSignUpClicked();
     }
 
-    private void attemptToSignUp() {
-        User user = new User();
-        user.setEmail(fragmentSignUpEmailEditText.getText().toString());
-        user.setUserName(fragmentSignUpUsernameEditText.getText().toString());
-        user.setPassword(passwordMatcher.getPassword());
-        user.setConfirmationPassword(passwordMatcher.getPassword());
-
-        listener.signUp(user);
+    @Override
+    public void showError(String errorMessage) {
+        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
     }
 
-    private boolean checkDataValidityLocaly() {
-        final String email = fragmentSignUpEmailEditText.getText().toString();
-        final String userName = fragmentSignUpUsernameEditText.getText().toString();
+    @Override
+    public void setListener(SignUpFragmentListener listener) {
+        this.listener = listener;
+    }
 
-        if(email.isEmpty() || userName.isEmpty() || passwordMatcher.isEmpty()) {
-            errorMessage = "No empty fields allowed";
-            return false;
-        }
+    @Override
+    public void setEmail(String email) {
+        fragmentSignUpEmailEditText.setText(email);
+    }
 
-        if(!UserUtil.validEmail(email)) {
-            errorMessage = "Email is not valid";
-            return false;
-        }
+    @Override
+    public void setUserName(String userName) {
+        fragmentSignUpUsernameEditText.setText(userName);
+    }
 
-        if (!passwordMatcher.passwordsValid()) {
-            errorMessage = "Passwords do not match";
-            return false;
-        }
+    @Override
+    public void setPassword(String password) {
+        passwordMatcher.setPasswordText(password);
+    }
 
-        if(passwordMatcher.length() < 8) {
-            errorMessage = "Password should be at least 8 characters long";
-            return false;
-        }
+    @Override
+    public void setConfirmationPassword(String passwordConfirmation) {
+        passwordMatcher.setPasswordConfirmationText(passwordConfirmation);
+    }
 
-        return true;
+    @Override
+    public void navigateToPokemonListScreen() {
+        listener.navigateToPokemonListScreen();
     }
 
     public interface SignUpFragmentListener {
 
-        void signUp(User user);
+        void navigateToPokemonListScreen();
 
     }
 
@@ -115,13 +98,8 @@ public class SignUpFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
-        RegisterActivity activity = (RegisterActivity) getActivity();
-        activity.getSupportActionBar().show();
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        if (savedInstanceState != null) {
-            restoreInstanceState(savedInstanceState);
-        }
+        presenter = new SignUpPresenterImpl(this);
+        presenter.subscribe(savedInstanceState == null ? null : StateUtil.readFromSignUpBundle(savedInstanceState));
 
         return view;
     }
@@ -129,42 +107,27 @@ public class SignUpFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof RegisterActivity) {
-            listener = (SignUpFragmentListener) context;
-        } else {
-            throw new RuntimeException(context.toString() + " must implement SignUpFragmentListener");
-        }
 
-    }
-
-    private void restoreInstanceState(Bundle savedInstanceState) {
-        fragmentSignUpEmailEditText.setText(savedInstanceState.getString("email"));
-        fragmentSignUpUsernameEditText.setText(savedInstanceState.getString("userName"));
-        passwordMatcher.setPasswordText(savedInstanceState.getString("password"));
-        passwordMatcher.setPasswordConfirmationText(savedInstanceState.getString("confirmationPassword"));
+        presenter = new SignUpPresenterImpl(this);
+        presenter.onAttach(context);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        RegisterActivity activity = (RegisterActivity) getActivity();
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        activity.getSupportActionBar().hide();
+       presenter.unsubscribe();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString("email", fragmentSignUpEmailEditText.getText().toString());
-        outState.putString("userName", fragmentSignUpUsernameEditText.getText().toString());
-        outState.putString("password", passwordMatcher.getPasswordText());
-        outState.putString("confirmationPassword", passwordMatcher.getPasswordConfirmationText());
+        StateUtil.writeToBundle(outState, presenter.getState());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        NetworkExecutor.getInstance().destroyAnyPendingTransactions();
+        presenter.cancelCall();
     }
 }

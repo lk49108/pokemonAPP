@@ -1,4 +1,4 @@
-package com.example.leonardo.pokemonapp;
+package com.example.leonardo.pokemonapp.UI.pokemon;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -19,6 +19,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.UI.pokemon.pokemonAdd.PokemonAddFragment;
+import com.example.leonardo.pokemonapp.UI.pokemon.pokemonList.PokemonListFragment;
+import com.example.leonardo.pokemonapp.R;
 import com.example.leonardo.pokemonapp.UI.register.RegisterActivity;
 import com.example.leonardo.pokemonapp.fragmentHandler.FragmentMainActivityHandlerHorizontalTablet;
 import com.example.leonardo.pokemonapp.fragmentHandler.FragmentMainActivityHandlerInt;
@@ -28,6 +31,7 @@ import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.network.resources.User;
 import com.example.leonardo.pokemonapp.util.UserUtil;
+import com.example.leonardo.pokemonapp.util.Util;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -125,7 +129,7 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
 
     public void logOut() {
 
-        boolean internetActionActive = UserUtil.internetConnectionActive();
+        boolean internetActionActive = Util.internetConnectionActive();
 
         if(!internetActionActive) {
             Toast.makeText(this, "Offline mode, you can not log out from the server.", Toast.LENGTH_LONG).show();
@@ -192,7 +196,7 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
 
         switch (item.getItemId()){
             case R.id.action_add_pokemon:
-                if(!UserUtil.internetConnectionActive()) {
+                if(!Util.internetConnectionActive()) {
                     Toast.makeText(this, "No internet connection, you can not add new pokemon", Toast.LENGTH_LONG).show();
                     return true;
                 }

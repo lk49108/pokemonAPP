@@ -10,15 +10,12 @@ public class LogInState implements LogInMVP.State {
 
     private final String password;
 
-    private final long millisecondsFromAnimationStart;
+    private final int passwordVisibilityDrawable;
 
-    private final boolean passwordVisible;
-
-    public LogInState(String email, String password, long millisecondsFromAnimationStart, boolean passwordVisible) {
+    public LogInState(String email, String password, int passwordVisibilityDrawable) {
         this.email = email;
         this.password = password;
-        this.millisecondsFromAnimationStart = millisecondsFromAnimationStart;
-        this.passwordVisible = passwordVisible;
+        this.passwordVisibilityDrawable = passwordVisibilityDrawable;
     }
 
     public String getEmail() {
@@ -29,11 +26,8 @@ public class LogInState implements LogInMVP.State {
         return password;
     }
 
-    public boolean isPasswordVisible() {
-        return passwordVisible;
+    public int getPasswordVisibilityDrawable() {
+        return passwordVisibilityDrawable;
     }
 
-    public long getMillisecondsFromAnimationStart() {
-        return millisecondsFromAnimationStart;
-    }
 }

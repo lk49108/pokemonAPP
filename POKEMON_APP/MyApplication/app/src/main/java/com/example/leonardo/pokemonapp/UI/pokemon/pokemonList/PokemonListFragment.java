@@ -1,27 +1,26 @@
-package com.example.leonardo.pokemonapp;
+package com.example.leonardo.pokemonapp.UI.pokemon.pokemonList;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.renderscript.ScriptIntrinsicYuvToRGB;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.UI.pokemon.pokemonList.adapter.PokemonListAdapter;
+import com.example.leonardo.pokemonapp.R;
 import com.example.leonardo.pokemonapp.database.DatabaseCreator;
 import com.example.leonardo.pokemonapp.database.SQLitePokedex;
 import com.example.leonardo.pokemonapp.database.model.PokemonDb;
 import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
 import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
-import com.example.leonardo.pokemonapp.util.UserUtil;
+import com.example.leonardo.pokemonapp.util.Util;
 
 import java.util.List;
 
@@ -109,7 +108,7 @@ public class PokemonListFragment extends Fragment {
 
     private void getPokemons() {
 
-        if(!UserUtil.internetConnectionActive()) {
+        if(!Util.internetConnectionActive()) {
             Toast.makeText(getActivity(), "No internet connection, offline mode.", Toast.LENGTH_LONG).show();
             loadFromDatabase();
             return;
@@ -259,7 +258,7 @@ public class PokemonListFragment extends Fragment {
         @Override
         public void onRefresh() {
 
-            if(!UserUtil.internetConnectionActive()) {
+            if(!Util.internetConnectionActive()) {
                 Toast.makeText(getActivity(), "No internet connection, could not refresh pokemon list.", Toast.LENGTH_LONG).show();
                 swipeRefreshLayout.setRefreshing(false);
                 return;

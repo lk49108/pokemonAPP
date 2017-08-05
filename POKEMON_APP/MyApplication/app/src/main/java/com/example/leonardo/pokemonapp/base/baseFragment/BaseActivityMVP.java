@@ -14,4 +14,6 @@ public interface BaseActivityMVP {
 
     }
 
+    interface View extends BaseMVP.View {}
+
 }

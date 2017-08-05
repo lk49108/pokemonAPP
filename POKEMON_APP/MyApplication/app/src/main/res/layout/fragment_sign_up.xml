@@ -74,14 +74,14 @@
 
             </LinearLayout>
 
-            <com.example.leonardo.pokemonapp.UI.PasswordMatcherView
+            <com.example.leonardo.pokemonapp.UI.customViews.PasswordMatcherView
                 android:id="@+id/fragment_sign_up_password_matcher"
                 app:layout_constraintTop_toBottomOf="@+id/fragment_sign_up_ll2"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content">
-            </com.example.leonardo.pokemonapp.UI.PasswordMatcherView>
+            </com.example.leonardo.pokemonapp.UI.customViews.PasswordMatcherView>
 
         </android.support.constraint.ConstraintLayout>
 

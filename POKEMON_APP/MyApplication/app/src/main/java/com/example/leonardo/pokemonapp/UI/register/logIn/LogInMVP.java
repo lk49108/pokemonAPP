@@ -14,7 +14,11 @@ public interface LogInMVP {
 
     interface View extends BaseFragmentMVP.View {
 
-        void showAnimation(AnimatorSet set);
+        void setListener(LogInFragment.LogInFragmentListener listener);
+
+        void showAnimation();
+
+        void stopAnimation();
 
         void setEmail(String email);
 
@@ -28,15 +32,23 @@ public interface LogInMVP {
 
         void navigateToPokemonListScreen();
 
+        void setPasswordVisibilityDrawable(int visibilityDrawable);
+
     }
 
     interface State extends BaseMVP.State{}
 
     interface Presenter extends BaseFragmentMVP.Presenter {
 
-        void onLogInPressed(String email, String password);
+        void onLogInPressed();
 
         void onResume();
+
+        void onEmailTextChanged(String email);
+
+        void onPasswordTextChange(String password);
+
+        void onPasswordVisiblityChange(int visibility);
 
     }
 

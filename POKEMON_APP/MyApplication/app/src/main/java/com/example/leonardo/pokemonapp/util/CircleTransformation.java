@@ -1,4 +1,4 @@
-package com.example.leonardo.pokemonapp;
+package com.example.leonardo.pokemonapp.util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;

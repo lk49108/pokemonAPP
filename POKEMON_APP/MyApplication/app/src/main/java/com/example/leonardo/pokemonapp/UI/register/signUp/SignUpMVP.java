@@ -1,6 +1,10 @@
 package com.example.leonardo.pokemonapp.UI.register.signUp;
 
+import android.support.v4.app.Fragment;
+
 import com.example.leonardo.pokemonapp.base.BaseMVP;
+import com.example.leonardo.pokemonapp.base.baseFragment.BaseFragmentMVP;
+import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
 
 /**
  * Created by leonardo on 04/08/17.
@@ -8,7 +12,9 @@ import com.example.leonardo.pokemonapp.base.BaseMVP;
 
 public interface SignUpMVP {
 
-    interface SignUpView extends BaseMVP.View {
+    interface View extends BaseFragmentMVP.View {
+
+        void setListener(SignUpFragment.SignUpFragmentListener listener);
 
         void setEmail(String email);
 
@@ -16,16 +22,33 @@ public interface SignUpMVP {
 
         void setPassword(String password);
 
-        void setPasswordConfirmation(String passwordConfirmation);
+        void setConfirmationPassword(String passwordConfirmation);
+
+        void navigateToPokemonListScreen();
 
     }
 
-    interface SignUpPresenter extends BaseMVP.Presenter {
+    interface Presenter extends BaseFragmentMVP.Presenter {
 
-        void onSignUpClicked(String email, String userName, String password, String passwordConfirmation);
+        void onSignUpClicked();
+
+        void onEmailChanged(String email);
+
+        void onUserNameChanged(String username);
+
+        void onPasswordChanged(String password);
+
+        void onConfirmationPasswordChanged(String confPassword);
 
     }
 
+    interface State extends BaseMVP.State {}
+
+    interface Interactor extends BaseMVP.Interactor {
+
+        void SignUp(String email, String username, String password, String confPassword, CallbackInt callback);
+
+    }
 
 
 }

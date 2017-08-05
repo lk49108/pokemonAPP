@@ -5,18 +5,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.UI.register.logIn.LogInFragment;
-import com.example.leonardo.pokemonapp.PokemonMainActivity;
+import com.example.leonardo.pokemonapp.UI.pokemon.PokemonMainActivity;
 import com.example.leonardo.pokemonapp.R;
 import com.example.leonardo.pokemonapp.UI.register.signUp.SignUpFragment;
-import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
-import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
-import com.example.leonardo.pokemonapp.network.resources.User;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,15 +35,22 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
 
         if(savedInstanceState == null) {
             initializeLayout();
+        } else {
+            if(getSupportFragmentManager().getBackStackEntryCount() == 0) {
+                getSupportActionBar().hide();
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            } else {
+                getSupportActionBar().show();
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
         }
     }
 
     private void initializeLayout() {
         getSupportActionBar().hide();
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(fragmentContainer.getId(), LogInFragment.newInstance(false)).commit();
-
+        transaction.replace(fragmentContainer.getId(), LogInFragment.newInstance()).commit();
     }
 
     @Override
@@ -62,20 +64,10 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
     }
 
     @Override
-    public void logIn(User user) {
-        NetworkExecutor.getInstance().logIn(user, new CallbackInt() {
-            @Override
-            public void onSuccess(Object object) {
-                Intent intent = new Intent(RegisterActivity.this, PokemonMainActivity.class);
-                startActivityForResult(intent, 20);
-            }
-
-            @Override
-            public void onFailure(String message) {
-                Toast.makeText(RegisterActivity.this, "Error when trying to log in", Toast.LENGTH_LONG).show();
-            }
-        });
-
+    public void onBackPressed() {
+        super.onBackPressed();
+        getSupportActionBar().hide();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
 
     @Override
@@ -84,47 +76,21 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
         transaction.replace(fragmentContainer.getId(), SignUpFragment.newInstance());
         transaction.addToBackStack(null);
         transaction.commit();
+
+        getSupportActionBar().show();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
-    public void finishActivity() {
-        Log.d("logIn", "finishing");
+    public void navigateToPokemonListScreen() {
         Intent intent = new Intent(this, PokemonMainActivity.class);
         startActivityForResult(intent, 20);
-    }
-
-
-    @Override
-    public void signUp(User user) {
-        NetworkExecutor.getInstance().signUp(user, new CallbackInt() {
-            @Override
-            public void onSuccess(Object object) {
-                Log.d("logIn", "signup");
-                Intent intent = new Intent(RegisterActivity.this, PokemonMainActivity.class);
-                startActivityForResult(intent, 20);
-            }
-
-            @Override
-            public void onFailure(String message) {
-                Toast.makeText(RegisterActivity.this, "Error when trying to sign up", Toast.LENGTH_LONG).show();
-            }
-        });
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        NetworkExecutor.getInstance().destroyAnyPendingTransactions();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode == RESULT_CANCELED) {
             finish();
-        } else if (resultCode == RESULT_OK) {
-            //FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            //transaction.replace(fragmentContainer.getId(), LogInFragment.newInstance(data.getBooleanExtra("logOutPressed", false))).commit();
         }
     }
 }

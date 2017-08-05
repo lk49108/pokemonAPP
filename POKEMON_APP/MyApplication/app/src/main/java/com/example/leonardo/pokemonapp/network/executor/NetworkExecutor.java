@@ -109,7 +109,6 @@ public class NetworkExecutor {
                 pendingCall = null;
                 if(response.isSuccessful()) {
                     User responseUser = response.body();
-                    UserUtil.logInUser(responseUser);
 
                     callBack.onSuccess((User) responseUser);
                 } else {

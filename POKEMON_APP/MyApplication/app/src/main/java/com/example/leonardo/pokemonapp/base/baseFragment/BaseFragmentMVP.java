@@ -12,8 +12,6 @@ public interface BaseFragmentMVP {
 
     interface View extends BaseMVP.View {
 
-        void setListener(Context context);
-
         void showProgress(String title, String message);
 
         void hideProgress();
