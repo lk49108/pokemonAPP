@@ -1,34 +1,32 @@
 package com.example.leonardo.pokemonapp.network.resources;
 
 import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.example.leonardo.pokemonapp.base.BaseMVP;
 import com.example.leonardo.pokemonapp.database.model.PokemonDb;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.Database;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.AsyncModel;
-import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.raizlabs.android.dbflow.structure.Model;
-import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
+import com.example.leonardo.pokemonapp.network.executor.ServiceCreator;
+import com.example.leonardo.pokemonapp.network.resources.enumerations.Gender;
+import com.example.leonardo.pokemonapp.network.resources.enumerations.Vote;
 import com.squareup.moshi.Json;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
+import moe.banana.jsonapi2.HasMany;
 import moe.banana.jsonapi2.JsonApi;
 import moe.banana.jsonapi2.Resource;
+import moe.banana.jsonapi2.ResourceIdentifier;
 
 /**
  * Created by leonardo on 12/07/17.
  */
 @JsonApi(type = "pokemons")
-public class Pokemon extends Resource implements Parcelable {
+public class Pokemon extends Resource implements Serializable, Comparable<Pokemon> {
 
     @Json(name = "image-url")
-    private Uri imageSource;
+    private String imageSource;
 
     @Json(name = "name")
     private String name;
@@ -37,61 +35,175 @@ public class Pokemon extends Resource implements Parcelable {
     private String description;
 
     @Json(name = "height")
-    private String height;
+    private double height;
 
     @Json(name = "weight")
-    private String weight;
-
-    @Json(name = "category")
-    private String category;
-
-    @Json(name = "abilities")
-    private String abilities;
+    private double weight;
 
     @Json(name = "gender")
-    private final String gender = "Male";
+    private Gender gender;
 
-    @Json(name = "gender_id")
-    private  final int genderId = 1;
+    @Json(name = "voted-on")
+    Vote votedOn;
 
-    public Pokemon() {
+    private HasMany<Type> types;
+
+    private HasMany<Comment> comments;
+
+    private HasMany<Move> moves;
+
+    private Comment[] pokemonComments;
+
+    public Comment[] getPokemonComments() {
+        return pokemonComments;
     }
 
-    public String getGender() {
-        return gender;
+    public void setPokemonComments(Comment[] pokemonComments) {
+        this.pokemonComments = pokemonComments;
     }
 
-    public int getGenderId() {
-        return genderId;
+    public Vote getVotedOn() {
+        return votedOn;
     }
 
-    public Uri getImageSource() {
+    public void setVotedOn(Vote votedOn) {
+        this.votedOn = votedOn;
+    }
+
+    public Pokemon() {}
+
+    public String getImageSource() {
+        if(imageSource != null && imageSource.startsWith("/")) {
+            return ServiceCreator.API_ENDPOINT + imageSource;
+        }
         return imageSource;
     }
 
-    public void setImageSource(Uri imageSource) {
+    public void setImageSource(String imageSource) {
         this.imageSource = imageSource;
     }
 
-    public Pokemon(String name, String description, String height, String weight, String category, String abilities, Uri imageSource) {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public HasMany<Type> getTypes() {
+        return types;
+    }
+
+    public void setTypes(HasMany<Type> types) {
+        this.types = types;
+    }
+
+    public HasMany<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(HasMany<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public HasMany<Move> getMoves() {
+        return moves;
+    }
+
+    public void setMoves(HasMany<Move> moves) {
+        this.moves = moves;
+    }
+
+    public int[] getTypeIds() {
+        List<ResourceIdentifier> types = getTypes().get();
+        if(types == null || types.size() == 0) {
+            return null;
+        }
+
+        int[] ids = new int[types.size()];
+        for(int i = 0; i < types.size(); i++) {
+            ids[i] = Integer.parseInt(types.get(i).getId());
+        }
+
+        return ids;
+    }
+
+    public int[] getMoveIds() {
+        List<ResourceIdentifier> moves = getMoves().get();
+        if(moves == null || moves.size() == 0) {
+            return null;
+        }
+
+        int[] ids = new int[moves.size()];
+        for(int i = 0; i < ids.length; i++) {
+            ids[i] = Integer.parseInt(moves.get(i).getId());
+        }
+
+        return ids;
+    }
+
+
+    public Pokemon(String name, String description, double height, double weight, String imageSource, Gender gender, Type[] types, Move[] moves, Vote votedOn) {
         this.name = name;
         this.description = description;
         this.height = height;
         this.weight = weight;
-        this.category = category;
-        this.abilities = abilities;
         this.imageSource = imageSource;
+        this.gender = gender;
+        setTypes(new HasMany<>(types));
+        setMoves(new HasMany<>(moves));
+        this.votedOn = votedOn;
     }
 
     public static Pokemon fromPokemonDb(PokemonDb pokemon) {
-        return new Pokemon(
+
+        Pokemon newPokemon = new Pokemon(
                 pokemon.getName(),
                 pokemon.getDescription(),
                 pokemon.getHeight(),
                 pokemon.getWeight(),
-                pokemon.getCategory(),
-                pokemon.getAbilities(),
-                pokemon.getImageSource());
+                pokemon.getImageUri(),
+                pokemon.getGender(),
+                pokemon.getTypes(),
+                pokemon.getMoves(),
+                pokemon.getVotedOn()
+        );
+
+        newPokemon.setId(String.valueOf(pokemon.getId()));
+        return newPokemon;
     }
 
     public static Pokemon[] fromPokemonDbList(List<PokemonDb> pokemon) {
@@ -103,96 +215,27 @@ public class Pokemon extends Resource implements Parcelable {
         return pokemons;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public static List<Pokemon> fromPokemonDbListlToList(List<PokemonDb> pokemon) {
+        List<Pokemon> pokemons = new ArrayList<>();
+        for(int i = 0; i < pokemon.size(); i++) {
+            pokemons.add(fromPokemonDb(pokemon.get(i)));
+        }
 
-    public String getHeight() {
-        return height;
-    }
-
-    public void setHeight(String height) {
-        this.height = height;
-    }
-
-    public String getWeight() {
-        return weight;
-    }
-
-    public void setWeight(String weight) {
-        this.weight = weight;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getAbilities() {
-        return abilities;
-    }
-
-    public void setAbilities(String abilities) {
-        this.abilities = abilities;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
+        return pokemons;
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public int compareTo(@NonNull Pokemon o) {
+        return Integer.parseInt(o.getId()) - Integer.parseInt(getId());
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeStringArray(new String[] {
-                name,
-                description,
-                height,
-                weight,
-                category,
-                abilities,
-                imageSource != null ? imageSource.toString() : null
-        });
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 
-    private Pokemon(Parcel in) {
-        String[] data = new String[7];
-
-        in.readStringArray(data);
-        name = data[0];
-        description = data[1];
-        height = data[2];
-        weight = data[3];
-        category = data[4];
-        abilities = data[5];
-        imageSource = (data[6] == null) ? null : Uri.parse(data[6]);
-
-
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
-
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-
-        public Pokemon createFromParcel(Parcel in) {
-            return new Pokemon(in);
-        }
-
-        public Pokemon[] newArray(int size) {
-            return new Pokemon[size];
-        }
-    };
-
 }

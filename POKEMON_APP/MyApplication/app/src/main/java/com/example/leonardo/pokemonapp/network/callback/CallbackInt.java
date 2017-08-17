@@ -7,4 +7,5 @@ package com.example.leonardo.pokemonapp.network.callback;
 public interface CallbackInt {
     void onSuccess(Object object);
     void onFailure(String message);
+    void onCancel();
 }

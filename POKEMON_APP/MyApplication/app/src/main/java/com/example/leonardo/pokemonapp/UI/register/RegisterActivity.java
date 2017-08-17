@@ -5,8 +5,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.UI.register.logIn.LogInFragment;
 import com.example.leonardo.pokemonapp.UI.pokemon.PokemonMainActivity;
@@ -32,6 +34,7 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
         ButterKnife.bind(this);
 
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Sign up");
 
         if(savedInstanceState == null) {
             initializeLayout();
@@ -65,9 +68,13 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        getSupportActionBar().hide();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStackImmediate();
+            getSupportActionBar().hide();
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        } else {
+            moveTaskToBack(true);
+        }
     }
 
     @Override
@@ -79,18 +86,14 @@ public class RegisterActivity extends AppCompatActivity implements LogInFragment
 
         getSupportActionBar().show();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
     @Override
     public void navigateToPokemonListScreen() {
         Intent intent = new Intent(this, PokemonMainActivity.class);
-        startActivityForResult(intent, 20);
+        startActivity(intent);
+        finish();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_CANCELED) {
-            finish();
-        }
-    }
 }

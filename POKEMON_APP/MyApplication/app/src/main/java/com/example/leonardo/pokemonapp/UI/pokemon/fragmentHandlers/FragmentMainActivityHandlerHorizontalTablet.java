@@ -1,16 +1,17 @@
-package com.example.leonardo.pokemonapp.fragmentHandler;
+package com.example.leonardo.pokemonapp.UI.pokemon.fragmentHandlers;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.widget.Toast;
 
+import com.example.leonardo.pokemonapp.UI.pokemon.fragmentHandlers.FragmentMainActivityHandlerInt;
+import com.example.leonardo.pokemonapp.UI.pokemon.pokemonComments.PokemonCommentsFragment;
+import com.example.leonardo.pokemonapp.network.resources.Comment;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.UI.pokemon.pokemonAdd.PokemonAddFragment;
 import com.example.leonardo.pokemonapp.UI.pokemon.pokemonDetails.PokemonDetailsFragment;
 import com.example.leonardo.pokemonapp.UI.pokemon.pokemonList.PokemonListFragment;
 import com.example.leonardo.pokemonapp.UI.pokemon.PokemonMainActivity;
-import com.example.leonardo.pokemonapp.util.Util;
 
 /**
  * Created by leonardo on 21/07/17.
@@ -73,13 +74,8 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
     public void pokemonAdded(Pokemon pokemon) {
         FragmentManager manager = activity.getSupportFragmentManager();
 
-        if(!Util.internetConnectionActive()) {
-            Toast.makeText(activity, "No internet connection, you can not add new pokemon", Toast.LENGTH_LONG).show();
-        } else {
-            PokemonListFragment listFragment = (PokemonListFragment) manager.findFragmentByTag("listFragment");
-            listFragment.addPokemon(pokemon);
-        }
-
+        PokemonListFragment listFragment = (PokemonListFragment) manager.findFragmentByTag("listFragment");
+        listFragment.addPokemon(pokemon);
 
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), PokemonDetailsFragment.newInstance(pokemon), "pokemonDetailsFragment");
@@ -91,8 +87,7 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
     @Override
     public void pokemonCreationCanceled() {
         FragmentManager manager = activity.getSupportFragmentManager();
-        PokemonAddFragment pokemonAddFragment = (PokemonAddFragment) manager.findFragmentByTag("addPokemonFragment");
-        pokemonAddFragment.resetLayoutState();
+        manager.beginTransaction().replace(activity.pokemonAddDetailFragmentContainer.getId(), PokemonAddFragment.newInstance(), "addPokemonFragment");
         activity.invalidateOptionsMenu();
     }
 
@@ -107,6 +102,14 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
         }
 
         return false;
+    }
+
+    @Override
+    public void onShowAllCommentsClicked(Comment[] comments, String pokemonName) {
+        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+        transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), PokemonCommentsFragment.newInstance(comments, pokemonName), "pokemonCommentsFragment");
+        transaction.addToBackStack("CommentsFragment on DetailsFragment");
+        transaction.commit();
     }
 
 }

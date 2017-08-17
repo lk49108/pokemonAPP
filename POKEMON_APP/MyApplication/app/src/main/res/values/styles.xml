@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppTheme">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -13,11 +13,108 @@
         <item name="android:background">@color/colorPrimary</item>
     </style>
 
-    <style name="FABTint" parent="Widget.Design.FloatingActionButton">
+    <style name="Tint" parent="Widget.Design.FloatingActionButton">
         <item name="backgroundTint">@color/colorPrimary</item>
     </style>
 
     <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Roboto">
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="RobotoMedium">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="RobotoMedium.LargeSizeText">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="RobotoMedium.LargeSizeText.GreenText">
+        <item name="android:textColor">@color/colorGreen</item>
+    </style>
+
+    <style name="RobotoMedium.ExtraSmallSizeText">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="RobotoMedium.ExtraSmallSizeText.GreenColor">
+        <item name="android:textColor">@color/colorGreen</item>
+    </style>
+
+    <style name="Roboto.Regular">
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="Roboto.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Roboto.Regular.SmallSizeText">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Roboto.Regular.NormalSizeText">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Roboto.Regular.NormalSizeText.GreyFont">
+        <item name="android:textColor">@color/colorGreyTwo</item>
+    </style>
+
+    <style name="Roboto.Regular.LargeSizeText">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="Roboto.Regular.SmallSizeText.Primary">
+        <item name="android:textColorHint">@color/hintColor</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="Roboto.Regular.SmallSizeText.BlackFont">
+        <item name="android:textColor">@color/colorBlack</item>
+    </style>
+
+    <style name="Roboto.Regular.SmallSizeText.BlueButton">
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
+    <style name="Roboto.Regular.SmallSizeText.WhiteButton">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:background">@color/colorWhite</item>
+    </style>
+
+    <style name="Roboto.Regular.NormalSizeText.Black">
+        <item name="android:textColor">@color/colorBlack</item>
+    </style>
+
+    <style name="Roboto.Regular.SmallSizeText.GreyFont">
+        <item name="android:textColor">@color/colorGrey</item>
+    </style>
+
+    <style name="Roboto.Regular.SmallSizeText.GreyFontTwo">
+        <item name="android:textColor">@color/colorGreyTwo</item>
+    </style>
+
+    <style name="Roboto.Bold.SmallSizeText">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Roboto.Bold.SmallSizeText.GreyFont">
+        <item name="android:textColor">@color/colorGrey</item>
+    </style>
+
+    <style name="RobotoMedium.ExtraSmallSizeText.GreyFont">
+        <item name="android:textColor">@color/colorGrey</item>
+    </style>
+
+    <style name="RobotoMedium.ExtraSmallSizeText.GreyFontTwo">
+        <item name="android:textColor">@color/colorGreyTwo</item>
+    </style>
+
 </resources>
+

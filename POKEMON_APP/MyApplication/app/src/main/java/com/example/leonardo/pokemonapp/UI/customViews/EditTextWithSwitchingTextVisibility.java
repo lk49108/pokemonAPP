@@ -1,4 +1,4 @@
-package com.example.leonardo.pokemonapp.UI.register;
+package com.example.leonardo.pokemonapp.UI.customViews;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -99,19 +99,19 @@ public class EditTextWithSwitchingTextVisibility extends AppCompatEditText {
         listener.onPasswordVissibilityChanged(drawable);
 
         switch(drawable) {
-            case R.drawable.ic_visibility_on:
+            case R.drawable.ic_visibility_off:
                 setTransformationMethod(new NoTransformationMethod());
                 return;
-            case R.drawable.ic_visibility_off:
+            case R.drawable.ic_visibility_on:
                 setTransformationMethod(new PasswordTransformationMethod());
                 return;
         }
     }
 
     private void init() {
-        Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_visibility_off);
+        Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_visibility_on);
         setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, drawable, null);
-        drawableId = R.drawable.ic_visibility_off;
+        drawableId = R.drawable.ic_visibility_on;
         setTransformationMethod(new PasswordTransformationMethod());
     }
 
