@@ -39,6 +39,7 @@ import com.example.leonardo.pokemonapp.util.Util;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Optional;
 
 public class PokemonMainActivity extends AppCompatActivity implements PokemonListFragment.PokemonListFragmentListener,
         PokemonAddFragment.PokemonAddFragmentListener, NavigationView.OnNavigationItemSelectedListener, PokemonDetailsFragment.PokemonDetailsFragmentListener {
@@ -55,6 +56,8 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
     public FrameLayout pokemonAddDetailFragmentContainer;
     @BindView(R.id.activity_main_drawer_layout)
     DrawerLayout drawer;
+
+    @Nullable
     @BindView(R.id.activity_main_navigation_view)
     NavigationView navigationView;
 
@@ -147,7 +150,14 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
 
             @Override
             public void onFailure(String message) {
-                Toast.makeText(PokemonMainActivity.this, message, Toast.LENGTH_SHORT).show();
+                if(message.equals("Wrong credentials not authenticated")) {
+                    UserUtil.logOutUser();
+                    Intent intent = new Intent(PokemonMainActivity.this, RegisterActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(PokemonMainActivity.this, message, Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override

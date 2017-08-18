@@ -2,6 +2,7 @@ package com.example.leonardo.pokemonapp.network.resources;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.leonardo.pokemonapp.base.BaseMVP;
 import com.example.leonardo.pokemonapp.database.model.PokemonDb;

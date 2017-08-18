@@ -36,6 +36,7 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
     public void fromOtherConfigurationInitialization() {
         Fragment addPokemonFragment = activity.getSupportFragmentManager().findFragmentByTag("addPokemonFragment");
         Fragment pokemonDetailsFragment = activity.getSupportFragmentManager().findFragmentByTag("pokemonDetailsFragment");
+        Fragment pokemonCommentsFragment = activity.getSupportFragmentManager().findFragmentByTag("pokemonCommentsFragment");
 
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
         if(addPokemonFragment != null) {
@@ -44,6 +45,18 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
             transaction = activity.getSupportFragmentManager().beginTransaction();
             transaction.replace(activity.pokemonMainFragmentContainer.getId(), addPokemonFragment, "addPokemonFragment");
             transaction.addToBackStack("AddFragment on ListFragment");
+        } else if(pokemonCommentsFragment != null) {
+            activity.getSupportFragmentManager().popBackStackImmediate();
+            transaction.remove(pokemonDetailsFragment).commit();
+            activity.getSupportFragmentManager().executePendingTransactions();
+            transaction = activity.getSupportFragmentManager().beginTransaction();
+            transaction.replace(activity.pokemonMainFragmentContainer.getId(), pokemonDetailsFragment, "pokemonDetailsFragment");
+            transaction.addToBackStack("DetailsFragment on ListFragment");
+            transaction.commit();
+            activity.getSupportFragmentManager().executePendingTransactions();
+            transaction = activity.getSupportFragmentManager().beginTransaction();
+            transaction.replace(activity.pokemonMainFragmentContainer.getId(), pokemonCommentsFragment, "pokemonCommentsFragment");
+            transaction.addToBackStack("CommentsFragment on DetailsFragment");
         } else if(pokemonDetailsFragment != null){
             transaction.remove(pokemonDetailsFragment).commit();
             activity.getSupportFragmentManager().executePendingTransactions();

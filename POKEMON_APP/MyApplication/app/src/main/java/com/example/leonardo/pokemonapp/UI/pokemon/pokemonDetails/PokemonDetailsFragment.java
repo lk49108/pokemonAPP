@@ -290,7 +290,7 @@ public class PokemonDetailsFragment extends BaseFragment implements PokemonDetai
 
     @OnClick(R.id.fragment_pokemon_details_show_all_comments_button)
     void onShowAllCommentsButtonClicked() {
-        listener.onShowAllPokemonsClicked(presenter.onShowAllCommentsClicked(), pokemon.getName());
+        listener.onShowAllPokemonsClicked(presenter.onShowAllCommentsClicked(), presenter.getPokemonName());
     }
 
     @OnClick(R.id.fragment_pokemon_details_comment_button)

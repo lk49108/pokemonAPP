@@ -216,7 +216,11 @@ public class PokemonAddPresenterImpl implements PokemonAddMVP.Presenter {
             @Override
             public void onFailure(String message) {
                 view.hideProgress();
-                view.showError(message);
+                if(message.equals("Wrong credentials not authenticated")) {
+                    view.showError("Failed to post pokemon, try to relogin.");
+                } else {
+                    view.showError(message);
+                }
             }
 
             @Override
@@ -290,12 +294,15 @@ public class PokemonAddPresenterImpl implements PokemonAddMVP.Presenter {
             }
 
             if(photoFile != null) {
+                Log.d("file ", photoFile.getPath());
                 Uri photoUri = FileProvider.getUriForFile(context,
                         "com.pokemon.android.fileprovider",
                         photoFile);
 
-                imageUri = photoUri.toString();
+                //Uri photoUri = Uri.parse(photoFile.getAbsolutePath());
 
+                imageUri = photoUri.toString();
+                Log.d("uri....ffs", imageUri);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 ((PokemonAddFragment) view).startActivityForResult(takePictureIntent, SET_POKEMON_PICTURE_WITH_CAMERA_REQUEST_CODE);
             } else {

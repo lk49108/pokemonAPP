@@ -60,6 +60,8 @@ public interface PokemonDetailsMVP {
 
     interface Presenter extends BaseFragmentMVP.Presenter {
 
+        String getPokemonName();
+
         void onLikePressed(int drawable);
 
         void onDislikePressed(int drawable);

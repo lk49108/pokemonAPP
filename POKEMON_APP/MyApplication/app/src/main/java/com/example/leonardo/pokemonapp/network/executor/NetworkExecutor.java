@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
@@ -251,6 +252,7 @@ public class NetworkExecutor {
 
     private RequestBody createRequestBodyWithImageToBeSent(Pokemon pokemon, Context context) {
         String imageUriString = pokemon.getImageSource();
+        Log.d("uri....ffs", imageUriString);
         if(imageUriString == null) {
             return null;
         }
@@ -259,10 +261,12 @@ public class NetworkExecutor {
 
         String filePathString = getPath(imageUri, context);
         if(filePathString == null) {
-            return null;
+            Log.d("null je", "null");
+            filePathString = imageUriString;
         }
 
         File file = new File(filePathString);
+        Log.d("null je", String.valueOf(file.exists()));
 
         RequestBody filePart = RequestBody.create(MediaType.parse("image/*"), file);
 
@@ -270,8 +274,12 @@ public class NetworkExecutor {
     }
 
     private String getPath(Uri imageUri, Context context) {
+        Log.d("image uri", imageUri.getPath());
         String[] proj = { MediaStore.Images.Media.DATA };
         Cursor cursor = context.getContentResolver().query(imageUri, proj, null, null, null);
+        if(cursor == null) {
+            return null;
+        }
         int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
         if(columnIndex == -1) {
             return null;

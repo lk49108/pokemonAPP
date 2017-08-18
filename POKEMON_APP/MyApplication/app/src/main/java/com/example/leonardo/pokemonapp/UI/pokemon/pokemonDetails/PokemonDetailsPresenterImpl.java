@@ -45,6 +45,8 @@ public class PokemonDetailsPresenterImpl implements PokemonDetailsMVP.Presenter 
         this.pokemon = pokemon;
     }
 
+
+
     @Override
     public void cancelCall() {
         interactor.cancel();
@@ -118,7 +120,11 @@ public class PokemonDetailsPresenterImpl implements PokemonDetailsMVP.Presenter 
             public void onFailure(String message) {
                 view.hideProgress();
                 view.hideComments();
-                view.showError("Failed to download pokemon comments");
+                if(message.equals("Wrong credentials not authenticated")) {
+                    view.showError("Failed to download pokemon comments, try to relogin.");
+                } else {
+                    view.showError("Failed to download pokemon comments");
+                }
             }
 
             @Override
@@ -214,6 +220,11 @@ public class PokemonDetailsPresenterImpl implements PokemonDetailsMVP.Presenter 
     }
 
     @Override
+    public String getPokemonName() {
+        return pokemon.getName();
+    }
+
+    @Override
     public void onLikePressed(int drawable) {
 
         if(!Util.internetConnectionActive()) {
@@ -239,8 +250,11 @@ public class PokemonDetailsPresenterImpl implements PokemonDetailsMVP.Presenter 
                 @Override
                 public void onFailure(String message) {
                     showVotes();
-                    view.showError("Failed to like pokemon");
-                }
+                    if(message.equals("Wrong credentials not authenticated")) {
+                        view.showError("Failed to like pokemon, try to relogin.");
+                    } else {
+                        view.showError("Failed to like pokemon");
+                    }                }
 
                 @Override
                 public void onCancel() {}
@@ -274,7 +288,11 @@ public class PokemonDetailsPresenterImpl implements PokemonDetailsMVP.Presenter 
                 @Override
                 public void onFailure(String message) {
                     showVotes();
-                    view.showError("Failed to dislike pokemon");
+                    if(message.equals("Wrong credentials not authenticated")) {
+                        view.showError("Failed to dislike pokemon, try to relogin.");
+                    } else {
+                        view.showError("Failed to dislike pokemon");
+                    }
                 }
 
                 @Override
@@ -319,7 +337,11 @@ public class PokemonDetailsPresenterImpl implements PokemonDetailsMVP.Presenter 
             @Override
             public void onFailure(String message) {
                 view.hideProgress();
-                view.showError("Failed to post a comment");
+                if(message.equals("Wrong credentials not authenticated")) {
+                    view.showError("Failed to post a comment, try to relogin.");
+                } else {
+                    view.showError("Failed to post a comment");
+                }
             }
 
             @Override

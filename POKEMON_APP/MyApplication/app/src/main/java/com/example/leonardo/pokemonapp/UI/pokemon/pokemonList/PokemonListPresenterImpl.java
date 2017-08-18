@@ -120,7 +120,11 @@ public class PokemonListPresenterImpl implements PokemonListMVP.Presenter {
             @Override
             public void onFailure(String message) {
                 view.hideProgress();
-                view.showError("Failed to download pokemons from server");
+                if(message.equals("Wrong credentials not authenticated")) {
+                    view.showError("Failed to download pokemons from server, try to relogin.");
+                } else {
+                    view.showError("Failed to download pokemons from server");
+                }
                 getPokemonsFromDatabase();
             }
 
@@ -188,7 +192,11 @@ public class PokemonListPresenterImpl implements PokemonListMVP.Presenter {
             public void onFailure(String message) {
                 view.hideSwipeToRefreshAnimation();
 
-                view.showError("Failed to refresh pokemon list");
+                if(message.equals("Wrong credentials not authenticated")) {
+                    view.showError("Failed to refresh pokemon list, try to relogin.");
+                } else {
+                    view.showError("Failed to refresh pokemon list");
+                }
             }
 
             @Override

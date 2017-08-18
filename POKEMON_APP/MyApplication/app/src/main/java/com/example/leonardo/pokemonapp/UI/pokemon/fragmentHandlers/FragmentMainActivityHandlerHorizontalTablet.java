@@ -37,12 +37,21 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
     public void fromOtherConfigurationInitialization() {
         Fragment addPokemonFragment = activity.getSupportFragmentManager().findFragmentByTag("addPokemonFragment");
         Fragment pokemonDetailsFragment = activity.getSupportFragmentManager().findFragmentByTag("pokemonDetailsFragment");
+        Fragment pokemonCommentsFragment = activity.getSupportFragmentManager().findFragmentByTag("pokemonCommentsFragment");
 
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
         if(activity.getSupportFragmentManager().getBackStackEntryCount() > 0) {
             activity.getSupportFragmentManager().popBackStackImmediate();
-            if(addPokemonFragment != null) {
+            if (addPokemonFragment != null) {
                 transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), addPokemonFragment, "addPokemonFragment");
+            } else if(pokemonCommentsFragment != null) {
+                activity.getSupportFragmentManager().popBackStackImmediate();
+                transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), pokemonDetailsFragment, "pokemonDetailsFragment");
+                transaction.commit();
+                activity.getSupportFragmentManager().executePendingTransactions();
+                transaction = activity.getSupportFragmentManager().beginTransaction();
+                transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), pokemonCommentsFragment, "pokemonDetailsFragment");
+                transaction.addToBackStack("CommentsFragment on DetailsFragment");
             } else {
                 transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), pokemonDetailsFragment, "pokemonDetailsFragment");
             }
@@ -99,6 +108,9 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
                 addPokemonFragment.makeDialog();
                 return true;
             }
+        } else if(activity.getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            activity.getSupportFragmentManager().popBackStackImmediate();
+            return true;
         }
 
         return false;
