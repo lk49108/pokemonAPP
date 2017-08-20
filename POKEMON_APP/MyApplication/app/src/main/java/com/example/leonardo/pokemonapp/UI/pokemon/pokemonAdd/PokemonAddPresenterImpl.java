@@ -121,7 +121,7 @@ public class PokemonAddPresenterImpl implements PokemonAddMVP.Presenter {
         view.setPokemonHeight(height);
         view.setPokemonWeight(weight);
         if(imageUri == null) {
-            view.setPokemonImage(R.drawable.ic_person);
+            view.setPokemonImage(R.drawable.ic_person_details);
         } else {
             view.setPokemonImage(Uri.parse(imageUri));
         }

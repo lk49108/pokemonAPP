@@ -205,7 +205,7 @@ public class PokemonDetailsPresenterImpl implements PokemonDetailsMVP.Presenter 
         if(pokemonImageSource != null && (PokemonResourcesUtil.imageFileExists(Uri.parse(pokemonImageSource), context) || pokemonImageSource.toString().startsWith("http"))) {
             view.showPokemonImage(Uri.parse(pokemonImageSource));
         } else {
-            view.showPokemonImage(R.drawable.ic_person);
+            view.showPokemonImage(R.drawable.ic_person_details);
         }
     }
 
