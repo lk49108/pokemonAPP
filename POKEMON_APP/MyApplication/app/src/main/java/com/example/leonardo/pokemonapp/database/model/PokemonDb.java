@@ -1,32 +1,33 @@
 package com.example.leonardo.pokemonapp.database.model;
 
-import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.example.leonardo.pokemonapp.database.AppDatabase;
-import com.example.leonardo.pokemonapp.database.model.converter.UriConverter;
+import com.example.leonardo.pokemonapp.database.model.converter.PokemonGenderConverter;
+import com.example.leonardo.pokemonapp.database.model.converter.PokemonVoteConverter;
+import com.example.leonardo.pokemonapp.network.resources.Move;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
+import com.example.leonardo.pokemonapp.network.resources.Type;
+import com.example.leonardo.pokemonapp.network.resources.enumerations.Gender;
+import com.example.leonardo.pokemonapp.network.resources.enumerations.Vote;
 import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.Database;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
-import com.squareup.moshi.Json;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by leonardo on 26/07/17.
  */
 @Table(database = AppDatabase.class)
-public class PokemonDb extends BaseModel implements Parcelable {
+public class PokemonDb extends BaseModel implements Serializable {
 
-    @PrimaryKey(autoincrement = true)
-    private long id;
+    @PrimaryKey
+    private int id;
 
-    @Column(typeConverter = UriConverter.class)
-    private Uri imageSource;
+    @Column
+    private String imageUri;
 
     @Column
     private String name;
@@ -35,37 +36,77 @@ public class PokemonDb extends BaseModel implements Parcelable {
     private String description;
 
     @Column
-    private String height;
+    private double height;
 
     @Column
-    private String weight;
+    private double weight;
 
     @Column
-    private String category;
+    String typeIds;
 
     @Column
-    private String abilities;
+    String moveIds;
+
+    @Column(typeConverter = PokemonVoteConverter.class)
+    Vote votedOn;
+
+    @Column(typeConverter = PokemonGenderConverter.class)
+    private Gender gender;
 
     public PokemonDb() {}
 
-    public PokemonDb(Uri imageSource, String name, String description, String height, String weight, String category, String abilities) {
-        this.imageSource = imageSource;
+    public PokemonDb(int id, String name, String description, double height, double weight, String typeIds, String moveIds, Vote votedOn, Gender gender, String imageUri) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.height = height;
         this.weight = weight;
-        this.category = category;
-        this.abilities = abilities;
+        this.typeIds = typeIds;
+        this.moveIds = moveIds;
+        this.votedOn = votedOn;
+        this.gender = gender;
+        this.imageUri = imageUri;
     }
 
     public static PokemonDb fromPokemon(Pokemon pokemon) {
-        return new PokemonDb(pokemon.getImageSource(),
+        return new PokemonDb(
+                Integer.parseInt(pokemon.getId()),
                 pokemon.getName(),
                 pokemon.getDescription(),
                 pokemon.getHeight(),
                 pokemon.getWeight(),
-                pokemon.getCategory(),
-                pokemon.getAbilities());
+                getMovesString(pokemon.getMoveIds()),
+                getTypesString(pokemon.getTypeIds()),
+                pokemon.getVotedOn(),
+                pokemon.getGender(),
+                pokemon.getImageSource()
+        );
+    }
+
+    private static String getTypesString(int[] typeIds) {
+        if(typeIds == null) {
+            return "";
+        }
+
+        String typesString = "";
+        for(int i = 0; i < typeIds.length; i++) {
+            typesString += String.valueOf(typeIds[i]) + ",";
+        }
+
+        return typesString.substring(0, typesString.length() - 1);
+    }
+
+    private static String getMovesString(int[] moveIds) {
+        if(moveIds == null) {
+            return "";
+        }
+
+        String movesString = "";
+        for(int i = 0; i < moveIds.length; i++) {
+            movesString += String.valueOf(moveIds[i]) + ",";
+        }
+
+        return movesString.substring(0, movesString.length() - 1);
     }
 
     public static PokemonDb[] fromPokemonArray(Pokemon[] pokemon) {
@@ -77,16 +118,6 @@ public class PokemonDb extends BaseModel implements Parcelable {
         return pokemonsDb;
     }
 
-    protected PokemonDb(Parcel in) {
-        imageSource = (Uri) in.readValue(Uri.class.getClassLoader());
-        name = in.readString();
-        description = in.readString();
-        height = in.readString();
-        weight = in.readString();
-        category = in.readString();
-        abilities = in.readString();
-    }
-
     public static PokemonDb[] fromPokemonList(List<Pokemon> pokemons) {
         PokemonDb[] pokemonsDb = new PokemonDb[pokemons.size()];
         for(int i = 0; i < pokemonsDb.length; i++) {
@@ -96,51 +127,13 @@ public class PokemonDb extends BaseModel implements Parcelable {
         return pokemonsDb;
     }
 
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(imageSource);
-        dest.writeString(name);
-        dest.writeString(description);
-        dest.writeString(height);
-        dest.writeString(weight);
-        dest.writeString(category);
-        dest.writeString(abilities);
-    }
-
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public long getId() {
+    public int getId() {
 
         return id;
-    }
-
-    @SuppressWarnings("unused")
-    public static final Parcelable.Creator<PokemonDb> CREATOR = new Parcelable.Creator<PokemonDb>() {
-        @Override
-        public PokemonDb createFromParcel(Parcel in) {
-            return new PokemonDb(in);
-        }
-
-        @Override
-        public PokemonDb[] newArray(int size) {
-            return new PokemonDb[size];
-        }
-    };
-
-    public Uri getImageSource() {
-        return imageSource;
-    }
-
-    public void setImageSource(Uri imageSource) {
-        this.imageSource = imageSource;
     }
 
     public String getName() {
@@ -159,36 +152,99 @@ public class PokemonDb extends BaseModel implements Parcelable {
         this.description = description;
     }
 
-    public String getHeight() {
-        return height;
-    }
-
-    public void setHeight(String height) {
+    public void setHeight(double height) {
         this.height = height;
     }
 
-    public String getWeight() {
-        return weight;
-    }
-
-    public void setWeight(String weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 
-    public String getCategory() {
-        return category;
+    public Gender getGender() {
+        return gender;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
-    public String getAbilities() {
-        return abilities;
+    public double getHeight() {
+        return height;
     }
 
-    public void setAbilities(String abilities) {
-        this.abilities = abilities;
+    public double getWeight() {
+        return weight;
     }
+
+    public Vote getVotedOn() {
+        return votedOn;
+    }
+
+    public void setVotedOn(Vote votedOn) {
+        this.votedOn = votedOn;
+    }
+
+    public Type[] getTypes() {
+        if(typeIds.isEmpty()) {
+            return new Type[0];
+        }
+
+        List<Type> typeList = new ArrayList<>();
+        for(String id : typeIds.split(",")) {
+            typeList.add(Type.getFromId(Integer.parseInt(id)));
+        }
+
+        return typeList.toArray(new Type[typeList.size()]);
+    }
+
+    public void setTypes(Type...types) {
+        if(types == null) {
+            typeIds = "";
+            return;
+        } else {
+            int[] typeIdInt = new int[types.length];
+            for(int i = 0; i < typeIdInt.length; i++) {
+                typeIdInt[i] = Integer.parseInt(types[i].getId());
+            }
+
+            typeIds = getTypesString(typeIdInt);
+        }
+    }
+
+    public Move[] getMoves() {
+        if(moveIds.isEmpty()) {
+            return new Move[0];
+        }
+
+        List<Move> moveList = new ArrayList<>();
+        for(String id : moveIds.split(",")) {
+            moveList.add(Move.getFromId(Integer.parseInt(id)));
+        }
+
+        return moveList.toArray(new Move[moveList.size()]);
+    }
+
+    public void setMoveIds(Move...moves) {
+        if(moves == null) {
+            moveIds = "";
+            return;
+        } else {
+            int[] moveIdInt = new int[moves.length];
+            for(int i = 0; i < moveIdInt.length; i++) {
+                moveIdInt[i] = Integer.parseInt(moves[i].getId());
+            }
+
+            moveIds = getMovesString(moveIdInt);
+        }
+    }
+
+    public String getImageUri() {
+        return imageUri;
+    }
+
+    public void setImageUri(String imageUri) {
+        this.imageUri = imageUri;
+    }
+
 
 }

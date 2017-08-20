@@ -72,6 +72,11 @@ public class SignUpPresenterImpl implements SignUpMVP.Presenter {
                 view.hideProgress();
                 view.showError(message);
             }
+
+            @Override
+            public void onCancel() {
+                view.hideProgress();
+            }
         });
     }
 

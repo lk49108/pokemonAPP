@@ -124,11 +124,14 @@ public class LogInPresenterImpl implements LogInMVP.Presenter, LogInAnimation.Lo
 
             @Override
             public void onFailure(String message) {
-
                 view.hideProgress();
                 view.showError(message);
             }
 
+            @Override
+            public void onCancel() {
+                view.hideProgress();
+            }
         });
     }
 

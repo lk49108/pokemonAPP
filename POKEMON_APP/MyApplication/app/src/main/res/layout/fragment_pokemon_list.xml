@@ -5,22 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/fragment_pokemon_list_empty_pokemon_list_layout"
-        layout="@layout/empty_pokemon_list_activity_layout"/>
-
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/fragment_pokemon_list_swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:visibility="gone"
-            android:layout_margin="20dp"
-            android:id="@+id/fragment_pokemon_list_recycler_view"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        </android.support.v7.widget.RecyclerView>
+
+            <include
+                android:id="@+id/fragment_pokemon_list_empty_pokemon_list_layout"
+                layout="@layout/empty_pokemon_list_activity_layout"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:visibility="gone"
+                android:layout_margin="10dp"
+                android:id="@+id/fragment_pokemon_list_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            </android.support.v7.widget.RecyclerView>
+
+        </FrameLayout>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

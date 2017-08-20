@@ -20,14 +20,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.UI.pokemon.pokemonAdd.PokemonAddFragment;
+import com.example.leonardo.pokemonapp.UI.pokemon.pokemonComments.PokemonCommentsFragment;
+import com.example.leonardo.pokemonapp.UI.pokemon.pokemonDetails.PokemonDetailsFragment;
 import com.example.leonardo.pokemonapp.UI.pokemon.pokemonList.PokemonListFragment;
 import com.example.leonardo.pokemonapp.R;
 import com.example.leonardo.pokemonapp.UI.register.RegisterActivity;
-import com.example.leonardo.pokemonapp.fragmentHandler.FragmentMainActivityHandlerHorizontalTablet;
-import com.example.leonardo.pokemonapp.fragmentHandler.FragmentMainActivityHandlerInt;
-import com.example.leonardo.pokemonapp.fragmentHandler.FragmentMainActivityHandlerRegular;
+import com.example.leonardo.pokemonapp.UI.pokemon.fragmentHandlers.FragmentMainActivityHandlerHorizontalTablet;
+import com.example.leonardo.pokemonapp.UI.pokemon.fragmentHandlers.FragmentMainActivityHandlerInt;
+import com.example.leonardo.pokemonapp.UI.pokemon.fragmentHandlers.FragmentMainActivityHandlerRegular;
 import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
 import com.example.leonardo.pokemonapp.network.executor.NetworkExecutor;
+import com.example.leonardo.pokemonapp.network.resources.Comment;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 import com.example.leonardo.pokemonapp.network.resources.User;
 import com.example.leonardo.pokemonapp.util.UserUtil;
@@ -36,9 +39,10 @@ import com.example.leonardo.pokemonapp.util.Util;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Optional;
 
 public class PokemonMainActivity extends AppCompatActivity implements PokemonListFragment.PokemonListFragmentListener,
-        PokemonAddFragment.PokemonAddFragmentListener, NavigationView.OnNavigationItemSelectedListener{
+        PokemonAddFragment.PokemonAddFragmentListener, NavigationView.OnNavigationItemSelectedListener, PokemonDetailsFragment.PokemonDetailsFragmentListener {
 
     @BindString(R.string.pokemon_list_activity_title)
     String title;
@@ -52,6 +56,8 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
     public FrameLayout pokemonAddDetailFragmentContainer;
     @BindView(R.id.activity_main_drawer_layout)
     DrawerLayout drawer;
+
+    @Nullable
     @BindView(R.id.activity_main_navigation_view)
     NavigationView navigationView;
 
@@ -72,15 +78,12 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
         initializeDrawerBehaviour();
 
         setSupportActionBar(pokemonMainActivityToolbar);
-        getSupportActionBar().setTitle(title);
+        invalidateOptionsMenu();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        if(pokemonAddDetailFragmentContainer != null) {
-            fragmentHandler = new FragmentMainActivityHandlerHorizontalTablet(this);
-        } else {
-            fragmentHandler = new FragmentMainActivityHandlerRegular(this);
-        }
+
+        fragmentHandler = pokemonAddDetailFragmentContainer != null ? new FragmentMainActivityHandlerHorizontalTablet(this) : new FragmentMainActivityHandlerRegular(this);
 
         if(savedInstanceState == null) {
             initializeFragments();
@@ -141,15 +144,24 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
             public void onSuccess(Object object) {
                 UserUtil.logOutUser();
                 Intent intent = new Intent(PokemonMainActivity.this, RegisterActivity.class);
-                intent.putExtra("logOutPressed", true);
-                setResult(RESULT_OK, intent);
+                startActivity(intent);
                 finish();
             }
 
             @Override
             public void onFailure(String message) {
-                Toast.makeText(PokemonMainActivity.this, "Unable to log out", Toast.LENGTH_SHORT).show();
+                if(message.equals("Wrong credentials not authenticated")) {
+                    UserUtil.logOutUser();
+                    Intent intent = new Intent(PokemonMainActivity.this, RegisterActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(PokemonMainActivity.this, message, Toast.LENGTH_SHORT).show();
+                }
             }
+
+            @Override
+            public void onCancel() {}
         });
     }
 
@@ -165,17 +177,35 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportFragmentManager().executePendingTransactions();
 
-        if(!onScreenAddPokemonFragment() && !verticalAndOnScreenPokemonDetails()) {
+        //pokemon list is rendered if true
+        if(!verticalAndOnScreenAddPokemonFragment() && !verticalAndOnScreenPokemonDetails() && !verticalAndOnScreenPokemonComments()) {
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.pokemon_list_activity_menu, menu);
+            getSupportActionBar().setTitle("Pokemon");
+        } else if(verticalAndOnScreenPokemonComments()) {
+            PokemonCommentsFragment pokemonCommentsFragment = (PokemonCommentsFragment) getSupportFragmentManager().findFragmentByTag("pokemonCommentsFragment");
+            getSupportActionBar().setTitle(pokemonCommentsFragment.getPokemonName() + " comments");
+        } else if(verticalAndOnScreenPokemonDetails()) {
+            getSupportActionBar().setTitle("Details");
+        } else {
+            getSupportActionBar().setTitle("Add New Pokemon");
         }
 
         return super.onCreateOptionsMenu(menu);
     }
 
-    public boolean onScreenAddPokemonFragment() {
+    private boolean verticalAndOnScreenPokemonComments() {
+        Fragment pokemonCommentsFragment = getSupportFragmentManager().findFragmentByTag("pokemonCommentsFragment");
+        if(pokemonCommentsFragment != null && pokemonCommentsFragment.isVisible() && verticalOrientation()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean verticalAndOnScreenAddPokemonFragment() {
         Fragment addPokemonFragment = getSupportFragmentManager().findFragmentByTag("addPokemonFragment");
-        if(addPokemonFragment != null && addPokemonFragment.isVisible()) {
+        if(addPokemonFragment != null && addPokemonFragment.isVisible() && verticalOrientation()) {
             return true;
         }
 
@@ -184,7 +214,7 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
 
     private boolean verticalAndOnScreenPokemonDetails() {
         Fragment pokemonDetailsFragment = getSupportFragmentManager().findFragmentByTag("pokemonDetailsFragment");
-        if(pokemonDetailsFragment != null && pokemonDetailsFragment.isVisible() && (fragmentHandler instanceof FragmentMainActivityHandlerRegular)) {
+        if(pokemonDetailsFragment != null && pokemonDetailsFragment.isVisible() && verticalOrientation()) {
             return true;
         }
 
@@ -234,8 +264,7 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
     @Override
     public void onBackPressed() {
         if(!fragmentHandler.onBackPressed()) {
-            setResult(RESULT_CANCELED);
-            finish();
+            moveTaskToBack(true);
         }
 
     }
@@ -279,4 +308,26 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
         NetworkExecutor.getInstance().destroyAnyPendingTransactions();
     }
 
+    @Override
+    public void onShowAllPokemonsClicked(Comment[] comments, String pokemonName) {
+        fragmentHandler.onShowAllCommentsClicked(comments, pokemonName);
+    }
+
+    public boolean onScreenCommentsScreen() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("pokemonCommentsFragment");
+        if(fragment != null && fragment.isVisible()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean onScreenAddPokemonFragment() {
+        Fragment addPokemonFragment = getSupportFragmentManager().findFragmentByTag("addPokemonFragment");
+        if(addPokemonFragment != null && addPokemonFragment.isVisible()) {
+            return true;
+        }
+
+        return false;
+    }
 }
