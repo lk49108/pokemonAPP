@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -252,7 +253,6 @@ public class NetworkExecutor {
 
     private RequestBody createRequestBodyWithImageToBeSent(Pokemon pokemon, Context context) {
         String imageUriString = pokemon.getImageSource();
-        Log.d("uri....ffs", imageUriString);
         if(imageUriString == null) {
             return null;
         }
@@ -260,13 +260,21 @@ public class NetworkExecutor {
         Uri imageUri = Uri.parse(imageUriString);
 
         String filePathString = getPath(imageUri, context);
+        File file = null;
         if(filePathString == null) {
-            Log.d("null je", "null");
-            filePathString = imageUriString;
+            File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            String rootDirPath = storageDir.getAbsolutePath();
+            String lastPart = rootDirPath.substring(rootDirPath.lastIndexOf('/') + 1);
+            int indexOfConcatPath = imageUriString.indexOf(lastPart) + lastPart.length() + 1;
+            String additionalFilePath = imageUriString.substring(indexOfConcatPath);
+            file = new File(storageDir, additionalFilePath);
         }
 
-        File file = new File(filePathString);
-        Log.d("null je", String.valueOf(file.exists()));
+        if(file == null) {
+            file = new File(filePathString);
+        } else if(!file.exists()) {
+            return null;
+        }
 
         RequestBody filePart = RequestBody.create(MediaType.parse("image/*"), file);
 
@@ -274,12 +282,8 @@ public class NetworkExecutor {
     }
 
     private String getPath(Uri imageUri, Context context) {
-        Log.d("image uri", imageUri.getPath());
         String[] proj = { MediaStore.Images.Media.DATA };
         Cursor cursor = context.getContentResolver().query(imageUri, proj, null, null, null);
-        if(cursor == null) {
-            return null;
-        }
         int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
         if(columnIndex == -1) {
             return null;

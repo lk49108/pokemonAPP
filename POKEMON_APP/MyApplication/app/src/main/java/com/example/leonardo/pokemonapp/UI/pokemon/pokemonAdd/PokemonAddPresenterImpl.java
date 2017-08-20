@@ -293,16 +293,16 @@ public class PokemonAddPresenterImpl implements PokemonAddMVP.Presenter {
                 view.showError("Can not make photo file.");
             }
 
+            final String authorities = context.getApplicationContext().getPackageName() + ".fileprovider";
             if(photoFile != null) {
-                Log.d("file ", photoFile.getPath());
                 Uri photoUri = FileProvider.getUriForFile(context,
-                        "com.pokemon.android.fileprovider",
+                        authorities,
                         photoFile);
 
-                //Uri photoUri = Uri.parse(photoFile.getAbsolutePath());
-
                 imageUri = photoUri.toString();
-                Log.d("uri....ffs", imageUri);
+
+                File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 ((PokemonAddFragment) view).startActivityForResult(takePictureIntent, SET_POKEMON_PICTURE_WITH_CAMERA_REQUEST_CODE);
             } else {

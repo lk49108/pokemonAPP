@@ -84,8 +84,9 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
     }
 
     public void addPokemon(Pokemon newPokemon) {
+        Log.d("pokemon added", newPokemon.getName());
         pokemons.add(0, newPokemon);
-        notifyDataSetChanged();
+        notifyItemInserted(0);
     }
 
     public void addAll(List<Pokemon> pokemonsNew) {
