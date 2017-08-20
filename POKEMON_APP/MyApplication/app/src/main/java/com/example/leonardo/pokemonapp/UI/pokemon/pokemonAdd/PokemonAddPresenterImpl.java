@@ -33,6 +33,7 @@ import java.util.DoubleSummaryStatistics;
 
 import moe.banana.jsonapi2.HasMany;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 /**
@@ -276,6 +277,8 @@ public class PokemonAddPresenterImpl implements PokemonAddMVP.Presenter {
             }
 
             view.setPokemonImage(Uri.parse(imageUri));
+        } else if(resultCode == RESULT_CANCELED){
+            imageUri = null;
         }
     }
 

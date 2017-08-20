@@ -41,6 +41,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
     public PokemonListAdapter(PokemonListFragment fragment, List<Pokemon> pokemons) {
         this.fragment = fragment;
         this.pokemons.addAll(pokemons);
+        notifyItemRangeInserted(0, pokemons.size());
     }
 
     public int size() {
@@ -84,9 +85,10 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
     }
 
     public void addPokemon(Pokemon newPokemon) {
-        Log.d("pokemon added", newPokemon.getName());
-        pokemons.add(0, newPokemon);
-        notifyItemInserted(0);
+        if(!pokemons.contains(newPokemon)) {
+            pokemons.add(0, newPokemon);
+            notifyItemInserted(0);
+        }
     }
 
     public void addAll(List<Pokemon> pokemonsNew) {
