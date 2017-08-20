@@ -24,7 +24,7 @@
             >
 
             <ImageView
-                android:background="@color/colorWhite"
+                android:background="@drawable/gradient"
                 android:id="@+id/fragment_pokemon_details_image_pokemon"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -60,7 +60,8 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/fragment_pokemon_details_text_name_pokemon"
                 app:layout_constraintBottom_toBottomOf="@+id/fragment_pokemon_details_text_description_pokemon"
-                android:layout_marginLeft="20dp"/>
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp" />
 
 
             <TextView
@@ -96,7 +97,9 @@
                 android:layout_marginLeft="35dp"
                 android:layout_marginRight="30dp"
                 android:layout_marginTop="20dp"
-                android:paddingBottom="27dp">
+                android:paddingBottom="27dp"
+                android:layout_marginStart="35dp"
+                android:layout_marginEnd="30dp">
 
                 <LinearLayout
                     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -181,7 +184,9 @@
                 android:layout_height="wrap_content"
                 android:weightSum="3"
                 android:layout_marginLeft="35dp"
-                android:layout_marginRight="30dp">
+                android:layout_marginRight="30dp"
+                android:layout_marginStart="35dp"
+                android:layout_marginEnd="30dp">
 
                 <LinearLayout
                     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -297,7 +302,7 @@
             <TextView
                 style="@style/Roboto.Regular.NormalSizeText.GreyFont"
                 android:id="@+id/fragment_pokemon_details_comments_title"
-                android:layout_width="match_parent"
+                android:layout_width="368dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/fragment_pokemon_details_ll3"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -309,7 +314,7 @@
                 android:id="@+id/fragment_pokemon_details_ll4"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fragment_pokemon_details_comments_title"
-                android:layout_width="match_parent"
+                android:layout_width="368dp"
                 android:layout_height="wrap_content"
                 android:weightSum="1"
                 android:orientation="horizontal">
@@ -332,7 +337,7 @@
             <TextView
                 style="@style/Roboto.Regular.SmallSizeText.GreyFont"
                 android:id="@+id/fragment_pokemon_details_comment_one_content"
-                android:layout_width="match_parent"
+                android:layout_width="368dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/fragment_pokemon_details_ll4"
                 app:layout_constraintLeft_toLeftOf="parent"/>
@@ -341,7 +346,7 @@
                 android:id="@+id/fragment_pokemon_details_ll5"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fragment_pokemon_details_comment_one_content"
-                android:layout_width="match_parent"
+                android:layout_width="368dp"
                 android:layout_height="wrap_content"
                 android:weightSum="1"
                 android:orientation="horizontal"
@@ -366,7 +371,7 @@
             <TextView
                 style="@style/Roboto.Regular.SmallSizeText.GreyFont"
                 android:id="@+id/fragment_pokemon_details_comment_two_content"
-                android:layout_width="match_parent"
+                android:layout_width="368dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/fragment_pokemon_details_ll5"
                 app:layout_constraintLeft_toLeftOf="parent" />
@@ -377,7 +382,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/fragment_pokemon_details_comment_two_content"
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:id="@+id/fragment_pokemon_details_show_all_comments_button"
-                android:layout_width="match_parent"
+                android:layout_width="368dp"
                 android:layout_height="wrap_content"
                 android:text="Show all" />
 

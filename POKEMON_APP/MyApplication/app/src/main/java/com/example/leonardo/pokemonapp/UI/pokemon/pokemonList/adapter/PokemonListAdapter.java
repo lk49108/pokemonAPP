@@ -72,10 +72,10 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
                 pokemon.getImageSource().toString().startsWith("http")) {
                 Picasso.with(fragment.getActivity()).load(pokemons.get(position).getImageSource()).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);
             } else {
-                Picasso.with(fragment.getActivity()).load(R.drawable.ic_person).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);
+                Picasso.with(fragment.getActivity()).load(R.drawable.ic_person_details).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);
             }
         } catch (NullPointerException ex) {
-            Picasso.with(fragment.getActivity()).load(R.drawable.ic_person).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);
+            Picasso.with(fragment.getActivity()).load(R.drawable.ic_person_details).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);
         }
     }
 
