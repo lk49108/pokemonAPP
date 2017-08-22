@@ -26,7 +26,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".UI.pokemon.PokemonMainActivity"></activity>
+        <activity
+            android:name=".UI.pokemon.PokemonMainActivity"
+            android:windowSoftInputMode="adjustResize">
+        </activity>
         <activity android:name=".UI.register.RegisterActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

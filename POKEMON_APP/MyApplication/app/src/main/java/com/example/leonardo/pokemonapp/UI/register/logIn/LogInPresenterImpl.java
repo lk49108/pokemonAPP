@@ -15,6 +15,7 @@ import com.example.leonardo.pokemonapp.network.resources.User;
 import com.example.leonardo.pokemonapp.sharedPref.SimpleSharedPrefsImpl;
 import com.example.leonardo.pokemonapp.util.LogInAnimation;
 import com.example.leonardo.pokemonapp.util.UserUtil;
+import com.example.leonardo.pokemonapp.util.Util;
 
 /**
  * Created by leonardo on 04/08/17.
@@ -95,6 +96,11 @@ public class LogInPresenterImpl implements LogInMVP.Presenter, LogInAnimation.Lo
 
     @Override
     public void onLogInPressed() {
+        if(!Util.internetConnectionActive()) {
+            view.showError("No active internet connection");
+            return;
+        }
+
         if(email.isEmpty() || password.isEmpty()) {
             view.showError("Empty fields are not allowed");
             return;

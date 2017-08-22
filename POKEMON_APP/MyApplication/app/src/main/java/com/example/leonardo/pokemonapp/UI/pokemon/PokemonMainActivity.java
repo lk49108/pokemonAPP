@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -64,6 +65,7 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
     private TextView emailTextView;
     private TextView usernameTextView;
     private View navigationViewHeader;
+    private ActionBarDrawerToggle drawerToggle;
 
     FragmentMainActivityHandlerInt fragmentHandler;
 
@@ -78,10 +80,12 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
         initializeDrawerBehaviour();
 
         setSupportActionBar(pokemonMainActivityToolbar);
-        invalidateOptionsMenu();
+        getSupportActionBar().setTitle(title);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        switchHomeUpButton(!(getSupportFragmentManager().getBackStackEntryCount() > 0));
 
         fragmentHandler = pokemonAddDetailFragmentContainer != null ? new FragmentMainActivityHandlerHorizontalTablet(this) : new FragmentMainActivityHandlerRegular(this);
 
@@ -96,9 +100,24 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
         }
     }
 
+    public void switchHomeUpButton(boolean drawerVisible) {
+        if(drawerVisible) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+            drawerToggle.setDrawerIndicatorEnabled(true);
+            drawerToggle.syncState();
+        } else {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+            drawerToggle.setDrawerIndicatorEnabled(false);
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
     private void initializeDrawerBehaviour() {
 
-        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
+        drawerToggle = new ActionBarDrawerToggle(
                 this,
                 drawer,
                 pokemonMainActivityToolbar,
@@ -117,7 +136,6 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
         };
 
         drawer.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -234,7 +252,11 @@ public class PokemonMainActivity extends AppCompatActivity implements PokemonLis
                 insertPokemonAddFragmentToActivity();
                 return true;
             case android.R.id.home:
-                drawer.openDrawer(GravityCompat.START);
+                if(getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    onBackPressed();
+                } else {
+                    drawer.openDrawer(GravityCompat.START);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -34,17 +34,23 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
 
     @Override
     public void fromOtherConfigurationInitialization() {
-        Fragment addPokemonFragment = activity.getSupportFragmentManager().findFragmentByTag("addPokemonFragment");
+        PokemonAddFragment addPokemonFragment = (PokemonAddFragment) activity.getSupportFragmentManager().findFragmentByTag("addPokemonFragment");
         Fragment pokemonDetailsFragment = activity.getSupportFragmentManager().findFragmentByTag("pokemonDetailsFragment");
         Fragment pokemonCommentsFragment = activity.getSupportFragmentManager().findFragmentByTag("pokemonCommentsFragment");
 
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
         if(addPokemonFragment != null) {
-            transaction.remove(addPokemonFragment).commit();
-            activity.getSupportFragmentManager().executePendingTransactions();
-            transaction = activity.getSupportFragmentManager().beginTransaction();
-            transaction.replace(activity.pokemonMainFragmentContainer.getId(), addPokemonFragment, "addPokemonFragment");
-            transaction.addToBackStack("AddFragment on ListFragment");
+            if(addPokemonFragment.shouldShowSavePokemonDialog()) {
+                transaction.remove(addPokemonFragment).commit();
+                activity.getSupportFragmentManager().executePendingTransactions();
+                transaction = activity.getSupportFragmentManager().beginTransaction();
+                transaction.replace(activity.pokemonMainFragmentContainer.getId(), addPokemonFragment, "addPokemonFragment");
+                transaction.addToBackStack("AddFragment on ListFragment");
+                activity.switchHomeUpButton(false);
+            } else {
+                transaction.remove(addPokemonFragment);
+                activity.switchHomeUpButton(true);
+            }
         } else if(pokemonCommentsFragment != null) {
             activity.getSupportFragmentManager().popBackStackImmediate();
             transaction.remove(pokemonDetailsFragment).commit();
@@ -57,12 +63,14 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
             transaction = activity.getSupportFragmentManager().beginTransaction();
             transaction.replace(activity.pokemonMainFragmentContainer.getId(), pokemonCommentsFragment, "pokemonCommentsFragment");
             transaction.addToBackStack("CommentsFragment on DetailsFragment");
+            activity.switchHomeUpButton(false);
         } else if(pokemonDetailsFragment != null){
             transaction.remove(pokemonDetailsFragment).commit();
             activity.getSupportFragmentManager().executePendingTransactions();
             transaction = activity.getSupportFragmentManager().beginTransaction();
             transaction.replace(activity.pokemonMainFragmentContainer.getId(), pokemonDetailsFragment, "pokemonDetailsFragment");
             transaction.addToBackStack("DetailsFragment on ListFragment");
+            activity.switchHomeUpButton(false);
         }
 
         transaction.commit();
@@ -80,6 +88,7 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
         transaction.addToBackStack("AddFragment on ListFragment");
         transaction.commit();
 
+        activity.switchHomeUpButton(false);
         activity.invalidateOptionsMenu();
     }
 
@@ -90,6 +99,7 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
         transaction.addToBackStack("DetailsFragment on ListFragment");
         transaction.commit();
 
+        activity.switchHomeUpButton(false);
         activity.invalidateOptionsMenu();
     }
 
@@ -101,6 +111,7 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
         PokemonListFragment listFragment = (PokemonListFragment) manager.findFragmentByTag("listFragment");
         listFragment.addPokemon(pokemon);
 
+        activity.switchHomeUpButton(true);
         activity.invalidateOptionsMenu();
     }
 
@@ -108,6 +119,8 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
     public void pokemonCreationCanceled() {
         FragmentManager manager = activity.getSupportFragmentManager();
         manager.popBackStack();
+
+        activity.switchHomeUpButton(true);
         activity.invalidateOptionsMenu();
     }
 
@@ -124,6 +137,7 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
             } else {
                 //pokemonDetailsFragment or commentsScreen on screen
                 activity.getSupportFragmentManager().popBackStackImmediate();
+                activity.switchHomeUpButton(!(activity.getSupportFragmentManager().getBackStackEntryCount() > 0));
                 activity.invalidateOptionsMenu();
             }
 
@@ -140,6 +154,7 @@ public class FragmentMainActivityHandlerRegular implements FragmentMainActivityH
         transaction.addToBackStack("CommentsFragment on DetailsFragment");
         transaction.commit();
 
+        activity.switchHomeUpButton(false);
         activity.invalidateOptionsMenu();
     }
 }
