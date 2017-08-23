@@ -2,10 +2,12 @@ package com.example.leonardo.pokemonapp.UI.customViews;
 
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -15,6 +17,7 @@ import com.example.leonardo.pokemonapp.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnTextChanged;
 
 /**
  * Created by leonardo on 01/08/17.
@@ -22,11 +25,19 @@ import butterknife.ButterKnife;
 
 public class PasswordMatcherView extends ConstraintLayout {
 
-
     @BindView(R.id.password_edit_text)
     EditText passwordEditText;
     @BindView(R.id.password_confirmation_edit_text)
     EditText passwordConfirmationEditText;
+
+    public interface PasswordMatcherViewListener {
+
+        void onPasswordChanged(String passwordText);
+        void onPasswordConfirmationChanged(String passwordConfirmationText);
+
+    }
+
+    private PasswordMatcherViewListener listener;
 
     public PasswordMatcherView(Context context) {
         super(context);
@@ -128,4 +139,22 @@ public class PasswordMatcherView extends ConstraintLayout {
    public String getPasswordConfirmationText() {
        return passwordConfirmationEditText.getText().toString();
    }
+
+   public void setListener(PasswordMatcherViewListener listener) {
+       this.listener = listener;
+   }
+
+    @OnTextChanged(R.id.password_edit_text)
+    void onPasswordChanged() {
+        if(listener != null) {
+            listener.onPasswordChanged(passwordEditText.getText().toString());
+        }
+    }
+
+    @OnTextChanged(R.id.password_confirmation_edit_text)
+    void onPasswordConfirmationChanged() {
+        if(listener != null) {
+            listener.onPasswordConfirmationChanged(passwordConfirmationEditText.getText().toString());
+        }
+    }
 }

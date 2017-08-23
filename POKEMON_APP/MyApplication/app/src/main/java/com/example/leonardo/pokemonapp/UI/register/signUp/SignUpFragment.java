@@ -18,12 +18,13 @@ import com.example.leonardo.pokemonapp.util.StateUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
 
 /**
  * Created by leonardo on 23/07/17.
  */
 
-public class SignUpFragment extends BaseFragment implements SignUpMVP.View {
+public class SignUpFragment extends BaseFragment implements SignUpMVP.View, PasswordMatcherView.PasswordMatcherViewListener {
 
     private SignUpMVP.Presenter presenter;
 
@@ -76,6 +77,16 @@ public class SignUpFragment extends BaseFragment implements SignUpMVP.View {
         listener.navigateToPokemonListScreen();
     }
 
+    @Override
+    public void onPasswordChanged(String passwordText) {
+        presenter.onPasswordChanged(passwordText);
+    }
+
+    @Override
+    public void onPasswordConfirmationChanged(String passwordConfirmationText) {
+        presenter.onConfirmationPasswordChanged(passwordConfirmationText);
+    }
+
     public interface SignUpFragmentListener {
 
         void navigateToPokemonListScreen();
@@ -98,6 +109,7 @@ public class SignUpFragment extends BaseFragment implements SignUpMVP.View {
 
         ButterKnife.bind(this, view);
 
+        passwordMatcher.setListener(this);
         presenter = new SignUpPresenterImpl(this);
         presenter.subscribe(savedInstanceState == null ? null : StateUtil.readFromSignUpBundle(savedInstanceState));
 
@@ -113,10 +125,10 @@ public class SignUpFragment extends BaseFragment implements SignUpMVP.View {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onStop() {
+        presenter.cancelCall();
 
-       presenter.unsubscribe();
+        super.onStop();
     }
 
     @Override
@@ -126,8 +138,18 @@ public class SignUpFragment extends BaseFragment implements SignUpMVP.View {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         presenter.cancelCall();
+
+        super.onDestroy();
+    }
+
+    @OnTextChanged(R.id.fragment_sign_up_email_edit_text)
+    void onEmailChanged() {
+        presenter.onEmailChanged(fragmentSignUpEmailEditText.getText().toString());
+    }
+
+    @OnTextChanged(R.id.fragment_sign_up_username_edit_text)
+    void onUsernameChanged() {
+        presenter.onUserNameChanged(fragmentSignUpUsernameEditText.getText().toString());
     }
 }

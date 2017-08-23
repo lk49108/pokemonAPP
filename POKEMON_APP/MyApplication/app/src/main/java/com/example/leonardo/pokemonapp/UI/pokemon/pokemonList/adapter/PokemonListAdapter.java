@@ -1,6 +1,8 @@
 package com.example.leonardo.pokemonapp.UI.pokemon.pokemonList.adapter;
 
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import moe.banana.jsonapi2.ResourceIdentifier;
 
 
 /**
@@ -28,13 +31,17 @@ import butterknife.OnClick;
 
 public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.ViewHolder> {
 
-    public static final String POKEMON_DETAILS_KEY = "pokemon.details.key";
-
-    private final List<Pokemon> pokemons = new ArrayList<>();
+    private final ArrayList<Pokemon> pokemons = new ArrayList<>();
     private PokemonListFragment fragment;
 
     public PokemonListAdapter(PokemonListFragment fragment) {
         this.fragment = fragment;
+    }
+
+    public PokemonListAdapter(PokemonListFragment fragment, List<Pokemon> pokemons) {
+        this.fragment = fragment;
+        this.pokemons.addAll(pokemons);
+        notifyItemRangeInserted(0, pokemons.size());
     }
 
     public int size() {
@@ -61,13 +68,15 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
         holder.pokemonNameTextView.setText(pokemon.getName());
 
         try {
-            if(PokemonResourcesUtil.imageFileExists(pokemon.getImageSource(), fragment.getActivity()) ||
+            if(PokemonResourcesUtil.imageFileExists(Uri.parse(pokemon.getImageSource()), fragment.getActivity()) ||
                 pokemon.getImageSource().toString().startsWith("http")) {
                 Picasso.with(fragment.getActivity()).load(pokemons.get(position).getImageSource()).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);
             } else {
-                Picasso.with(fragment.getActivity()).load(R.drawable.ic_person).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);
+                Picasso.with(fragment.getActivity()).load(R.drawable.ic_person_details).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);
             }
-        } catch (NullPointerException ex) {}
+        } catch (NullPointerException ex) {
+            Picasso.with(fragment.getActivity()).load(R.drawable.ic_person_details).transform(new CircleTransformation()).into(holder.pokemonRoundImageView);
+        }
     }
 
     @Override
@@ -76,8 +85,19 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
     }
 
     public void addPokemon(Pokemon newPokemon) {
-        pokemons.add(newPokemon);
-        notifyItemInserted(pokemons.size() - 1);
+        if(!pokemons.contains(newPokemon)) {
+            pokemons.add(0, newPokemon);
+            notifyItemInserted(0);
+        }
+    }
+
+    public void addAll(List<Pokemon> pokemonsNew) {
+        int startPostion = pokemons.size();
+        for(Pokemon pokemonNew : pokemonsNew) {
+            pokemons.add(pokemonNew);
+        }
+
+        notifyItemRangeInserted(startPostion, pokemonsNew.size());
     }
 
     public void addAll(Pokemon[] pokemonsNew) {
@@ -109,7 +129,7 @@ public class PokemonListAdapter extends RecyclerView.Adapter<PokemonListAdapter.
 
         @OnClick(R.id.pokemon_name_view)
         public void onPokemonNameClick() {
-           fragment.getListener().pokemonSelected(pokemons.get(getAdapterPosition()));
+            fragment.getListener().pokemonSelected(pokemons.get(getAdapterPosition()));
         }
     }
 }

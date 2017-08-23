@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 public class UserUtil {
 
-    private static final String EMAIL_REGEX = ".+\\@.+\\..+";
+    private static final String EMAIL_REGEX = ".+\\@[^\\+]+\\.[^\\+]+";
 
     public static boolean isLoggedIn() {
         return SimpleSharedPrefsImpl.getInstance().isLoggedIn();
