@@ -44,8 +44,8 @@
                 android:visibility="invisible"
                 android:layout_marginTop="20dp"
                 android:id="@+id/fragment_log_in_ll"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="5dp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/fragment_log_in_poke_ball"
@@ -60,6 +60,7 @@
                     android:src="@drawable/ic_mail"/>
 
                 <EditText
+                    style="@style/Roboto.Regular.SmallSizeText.Primary"
                     android:id="@+id/fragment_log_in_email_edit_text"
                     android:layout_gravity="center_vertical"
                     android:layout_width="0dp"
@@ -73,8 +74,8 @@
             <LinearLayout
                 android:id="@+id/fragment_log_in_ll2"
                 android:visibility="invisible"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="5dp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/fragment_log_in_ll"
@@ -88,7 +89,8 @@
                     android:layout_gravity="center"
                     android:src="@drawable/ic_lock"/>
 
-                <com.example.leonardo.pokemonapp.UI.register.EditTextWithSwitchingTextVisibility
+                <com.example.leonardo.pokemonapp.UI.customViews.EditTextWithSwitchingTextVisibility
+                    style="@style/Roboto.Regular.SmallSizeText.Primary"
                     android:id="@+id/fragment_log_in_password_edit_text"
                     android:layout_gravity="center_vertical"
                     android:layout_width="0dp"
@@ -104,6 +106,7 @@
 
 
     <Button
+        style="@style/Roboto.Regular.SmallSizeText.WhiteButton"
         android:visibility="gone"
         android:id="@+id/fragment_log_in_sign_up_button"
         android:layout_width="0dp"
@@ -111,12 +114,11 @@
         android:text="@string/signUpString"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:textColor="@color/colorPrimary"
-        android:background="@color/colorWhite" />
+        app:layout_constraintRight_toRightOf="parent" />
 
 
     <Button
+        style="@style/Roboto.Regular.SmallSizeText.BlueButton"
         android:visibility="gone"
         android:id="@+id/fragment_log_in_log_in_button"
         android:layout_width="0dp"
@@ -124,8 +126,6 @@
         android:text="@string/logInString"
         app:layout_constraintBottom_toTopOf="@+id/fragment_log_in_sign_up_button"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:textColor="@color/colorWhite"
-        android:background="@color/colorPrimary" />
+        app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

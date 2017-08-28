@@ -1,5 +1,6 @@
-package com.example.leonardo.pokemonapp.fragmentHandler;
+package com.example.leonardo.pokemonapp.UI.pokemon.fragmentHandlers;
 
+import com.example.leonardo.pokemonapp.network.resources.Comment;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
 
 /**
@@ -21,4 +22,6 @@ public interface FragmentMainActivityHandlerInt {
     void pokemonCreationCanceled();
 
     boolean onBackPressed();
+
+    void onShowAllCommentsClicked(Comment[] comments, String pokemonName);
 }

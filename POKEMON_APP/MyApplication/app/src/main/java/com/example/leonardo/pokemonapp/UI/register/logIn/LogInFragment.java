@@ -3,7 +3,6 @@ package com.example.leonardo.pokemonapp.UI.register.logIn;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.example.leonardo.pokemonapp.R;
-import com.example.leonardo.pokemonapp.UI.register.EditTextWithSwitchingTextVisibility;
+import com.example.leonardo.pokemonapp.UI.customViews.EditTextWithSwitchingTextVisibility;
 import com.example.leonardo.pokemonapp.base.BaseFragment;
 import com.example.leonardo.pokemonapp.util.LogInAnimation;
 import com.example.leonardo.pokemonapp.util.StateUtil;
@@ -180,15 +179,16 @@ public class LogInFragment extends BaseFragment implements LogInMVP.View, EditTe
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        presenter.unsubscribe();
+    public void onStop() {
+        presenter.cancelCall();
+
+        super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         presenter.cancelCall();
+
+        super.onDestroy();
     }
 }

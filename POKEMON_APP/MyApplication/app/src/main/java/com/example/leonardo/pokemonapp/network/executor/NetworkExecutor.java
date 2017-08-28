@@ -1,29 +1,50 @@
 package com.example.leonardo.pokemonapp.network.executor;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.leonardo.pokemonapp.network.callback.CallbackInt;
+import com.example.leonardo.pokemonapp.network.executor.errorHandler.ErrorHandler;
+import com.example.leonardo.pokemonapp.network.resources.Comment;
 import com.example.leonardo.pokemonapp.network.resources.Pokemon;
+import com.example.leonardo.pokemonapp.network.resources.Type;
 import com.example.leonardo.pokemonapp.network.resources.User;
 import com.example.leonardo.pokemonapp.network.services.PokemonService;
 import com.example.leonardo.pokemonapp.network.services.UserService;
 import com.example.leonardo.pokemonapp.util.PokemonResourcesUtil;
 import com.example.leonardo.pokemonapp.util.UserUtil;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.JsonReader;
+import com.squareup.moshi.JsonWriter;
 import com.squareup.picasso.Picasso;
 
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import moe.banana.jsonapi2.Document;
+import moe.banana.jsonapi2.JsonBuffer;
+import moe.banana.jsonapi2.Resource;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,13 +56,15 @@ import retrofit2.http.Multipart;
 
 public class NetworkExecutor {
 
-    public static File imageFile;
-
     private static NetworkExecutor networkExecutor;
 
     private NetworkExecutor(){}
 
-    private volatile static Call<?> pendingCall;
+    private volatile List<Call<?>> calls;
+
+    {
+        calls = new ArrayList<>();
+    }
 
     public static NetworkExecutor getInstance() {
         if(networkExecutor == null) {
@@ -52,8 +75,8 @@ public class NetworkExecutor {
     }
 
     public void destroyAnyPendingTransactions() {
-        if(pendingCall != null) {
-            pendingCall.cancel();
+        for(Call<?> call : calls) {
+            call.cancel();
         }
     }
 
@@ -69,26 +92,25 @@ public class NetworkExecutor {
 
         Call<User> call = userService.createUser(user);
 
-        pendingCall = call;
+        calls.add(call);
 
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                pendingCall = null;
-                if(response.isSuccessful()) {
-                    User responseUser = response.body();
-                    UserUtil.logInUser(responseUser);
+                calls.remove(call);
 
-                    callBack.onSuccess((User) responseUser);
+                if(response.isSuccessful()) {
+                    callBack.onSuccess(response.body());
                 } else {
-                    callBack.onFailure("Response was not valid.");
+                    callBack.onFailure(ErrorHandler.getErrorResponse(response).toString());
                 }
             }
-
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                pendingCall = null;
-                if(!call.isCanceled()) {
+                calls.remove(call);
+                if(call.isCanceled()) {
+                    callBack.onCancel();
+                } else {
                     callBack.onFailure("Failure");
                 }
             }
@@ -101,25 +123,29 @@ public class NetworkExecutor {
 
         Call<User> call = userService.loginUser(user);
 
-        pendingCall = call;
+        calls.add(call);
 
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                pendingCall = null;
+                calls.remove(call);
                 if(response.isSuccessful()) {
                     User responseUser = response.body();
 
                     callBack.onSuccess((User) responseUser);
                 } else {
-                    callBack.onFailure("Response was not valid.");
+                    callBack.onFailure(ErrorHandler.getErrorResponse(response).toString());
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                pendingCall = null;
-                callBack.onFailure("Failure");
+                calls.remove(call);
+                if(call.isCanceled()) {
+                    callBack.onCancel();
+                } else {
+                    callBack.onFailure("Failure");
+                }
             }
         });
 
@@ -130,23 +156,27 @@ public class NetworkExecutor {
 
         Call<Void> call = userService.logoutUser(getAuthenticationString());
 
-        pendingCall = call;
+        calls.add(call);
 
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                pendingCall = null;
+                calls.remove(call);
                 if(response.isSuccessful()) {
                     callBack.onSuccess(null);
                 } else {
-                    callBack.onFailure("Response was not valid.");
+                    callBack.onFailure(ErrorHandler.getErrorResponse(response).toString());
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                pendingCall = null;
-                callBack.onFailure("Failure");
+                calls.remove(call);
+                if(call.isCanceled()) {
+                    callBack.onCancel();
+                } else {
+                    callBack.onFailure("Failure");
+                }
             }
         });
 
@@ -159,24 +189,27 @@ public class NetworkExecutor {
 
         Call<Pokemon[]> call = pokeService.getAllPokemons(getAuthenticationString());
 
-        pendingCall = call;
+        calls.add(call);
 
         call.enqueue(new Callback<Pokemon[]>() {
             @Override
             public void onResponse(Call<Pokemon[]> call, Response<Pokemon[]> response) {
-                pendingCall = null;
+                calls.remove(call);
                 if(response.isSuccessful()) {
-                    Log.d("successs", "jes :D");
                     callBack.onSuccess(response.body());
                 } else {
-                    callBack.onFailure("Response was not valid.");
+                    callBack.onFailure(ErrorHandler.getErrorResponse(response).toString());
                 }
             }
 
             @Override
             public void onFailure(Call<Pokemon[]> call, Throwable t) {
-                pendingCall = null;
-                callBack.onFailure("Failure");
+                calls.remove(call);
+                if(call.isCanceled()) {
+                    callBack.onCancel();
+                } else {
+                    callBack.onFailure("Failure");
+                }
             }
         });
 
@@ -188,26 +221,28 @@ public class NetworkExecutor {
         RequestBody requestBody = createRequestBodyWithImageToBeSent(pokemon, context);
         Call<Pokemon> call = pokeService
                 .createPokemon(getAuthenticationString(), pokemon.getName(),
-                        12, 12, false, 1, pokemon.getDescription(),
-                        new int[0], new int[0], requestBody);
+                        pokemon.getHeight(), pokemon.getWeight(), false, pokemon.getGender().getId(), pokemon.getDescription(),
+                        pokemon.getTypeIds(), pokemon.getMoveIds(), requestBody);
 
-        pendingCall = call;
+        calls.add(call);
 
         call.enqueue(new Callback<Pokemon>() {
             @Override
             public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
-                pendingCall = null;
+                calls.remove(call);
                 if(response.isSuccessful()) {
                     callBack.onSuccess(response.body());
                 } else {
-                    callBack.onFailure("Response was not valid.");
+                    callBack.onFailure(ErrorHandler.getErrorResponse(response).toString());
                 }
             }
 
             @Override
             public void onFailure(Call<Pokemon> call, Throwable t) {
-                pendingCall = null;
-                if(!call.isCanceled()) {
+                calls.remove(call);
+                if(call.isCanceled()) {
+                    callBack.onCancel();
+                } else {
                     callBack.onFailure("Failure");
                 }
             }
@@ -217,17 +252,29 @@ public class NetworkExecutor {
     }
 
     private RequestBody createRequestBodyWithImageToBeSent(Pokemon pokemon, Context context) {
-        Uri imageUri = pokemon.getImageSource();
-        if(imageUri == null) {
+        String imageUriString = pokemon.getImageSource();
+        if(imageUriString == null) {
             return null;
         }
+
+        Uri imageUri = Uri.parse(imageUriString);
 
         String filePathString = getPath(imageUri, context);
+        File file = null;
         if(filePathString == null) {
-            return null;
+            File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            String rootDirPath = storageDir.getAbsolutePath();
+            String lastPart = rootDirPath.substring(rootDirPath.lastIndexOf('/') + 1);
+            int indexOfConcatPath = imageUriString.indexOf(lastPart) + lastPart.length() + 1;
+            String additionalFilePath = imageUriString.substring(indexOfConcatPath);
+            file = new File(storageDir, additionalFilePath);
         }
 
-        File file = new File(filePathString);
+        if(file == null) {
+            file = new File(filePathString);
+        } else if(!file.exists()) {
+            return null;
+        }
 
         RequestBody filePart = RequestBody.create(MediaType.parse("image/*"), file);
 
@@ -245,4 +292,286 @@ public class NetworkExecutor {
         return  cursor.getString(columnIndex);
     }
 
+    public void getPokemon(int id, CallbackInt callBack) {
+        PokemonService pokeService = ServiceCreator.getPokemonService();
+
+
+        Call<Pokemon> call = pokeService.getPokemon(getAuthenticationString(), id);
+        calls.add(call);
+
+        call.enqueue(new Callback<Pokemon>() {
+            @Override
+            public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
+                calls.remove(call);
+                if(response.isSuccessful()) {
+                    callBack.onSuccess(response.body());
+                } else {
+                    callBack.onFailure(ErrorHandler.getErrorResponse(response).toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Pokemon> call, Throwable t) {
+                calls.remove(call);
+                if(call.isCanceled()) {
+                    callBack.onCancel();
+                } else {
+                    callBack.onFailure("Failure");
+                }
+            }
+        });
+    }
+
+    public void downVotePokemon(int pokemonId, CallbackInt callBack) {
+        PokemonService pokeService = ServiceCreator.getPokemonService();
+
+        Call<Pokemon> call = pokeService.downVotePokemon(getAuthenticationString(), pokemonId);
+        calls.add(call);
+
+        call.enqueue(new Callback<Pokemon>() {
+            @Override
+            public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
+                calls.remove(call);
+                if(response.isSuccessful()) {
+                    callBack.onSuccess(response.body());
+                } else {
+                    callBack.onFailure(ErrorHandler.getErrorResponse(response).toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Pokemon> call, Throwable t) {
+                calls.remove(call);
+                if(call.isCanceled()) {
+                    callBack.onCancel();
+                } else {
+                    callBack.onFailure("Failure");
+                }
+            }
+        });
+
+    }
+
+    public void upVotePokemon(int pokemonId, CallbackInt callBack) {
+        PokemonService pokeService = ServiceCreator.getPokemonService();
+
+        Call<Pokemon> call = pokeService.upVotePokemon(getAuthenticationString(), pokemonId);
+        calls.add(call);
+
+        call.enqueue(new Callback<Pokemon>() {
+            @Override
+            public void onResponse(Call<Pokemon> call, Response<Pokemon> response) {
+                calls.remove(call);
+                if(response.isSuccessful()) {
+                    callBack.onSuccess(response.body());
+                } else {
+                    callBack.onFailure(ErrorHandler.getErrorResponse(response).toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Pokemon> call, Throwable t) {
+                calls.remove(call);
+                if(call.isCanceled()) {
+                    callBack.onCancel();
+                } else {
+                    callBack.onFailure("Failure");
+                }
+            }
+        });
+    }
+
+    public void getCommentsForPokemon(int pokemonId, CallbackInt callBack) {
+        PokemonService pokeService = ServiceCreator.getPokemonService();
+
+        Call<Document> call = pokeService.getCommentsForPokemon(getAuthenticationString(), pokemonId);
+        calls.add(call);
+
+        call.enqueue(new Callback<Document>() {
+            @Override
+            public void onResponse(Call<Document> call, Response<Document> response) {
+                calls.remove(call);
+                if(response.isSuccessful()) {
+                    Document document = response.body();
+                    JsonBuffer<Object> buffer = document.getLinks();
+
+                    Object object = buffer.get(new JsonAdapter<Object>() {
+                        @Nullable
+                        @Override
+                        public Object fromJson(JsonReader reader) throws IOException {
+                            return reader.readJsonValue();
+                        }
+
+                        @Override
+                        public void toJson(JsonWriter writer, Object value) throws IOException {}
+
+                    });
+
+                    int[] lastPageAndPageSize = getLastPageAndPageSize(object);
+                    getComments(pokemonId, lastPageAndPageSize[0], lastPageAndPageSize[1],
+                            new CallbackInt() {
+                                @Override
+                                public void onSuccess(Object object) {
+                                    callBack.onSuccess(object);
+                                }
+
+                                @Override
+                                public void onFailure(String message) {
+                                    callBack.onFailure(message);
+                                }
+
+                                @Override
+                                public void onCancel() {
+                                    callBack.onCancel();
+                                }
+                            });
+
+                } else {
+                    callBack.onFailure(ErrorHandler.getErrorResponse(response).toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Document> call, Throwable t) {
+                calls.remove(call);
+                if(call.isCanceled()) {
+                    callBack.onCancel();
+                } else {
+                    callBack.onFailure("Failure");
+                }
+            }
+        });
+    }
+
+    private int[] getLastPageAndPageSize(Object object) {
+        int[] returnValues = new int[]{1, 10};
+        if(object instanceof Map) {
+            Map<String, Object> linksMap = (Map<String, Object>) object;
+
+            Object lastPageLink = linksMap.get("last");
+            if(lastPageLink != null && lastPageLink instanceof String) {
+                String lastPage = (String) lastPageLink;
+
+                Pattern p = Pattern.compile("https://pokeapi\\.infinum\\.co/api/v1/pokemons/[0-9]+/comments\\?page%5Bnumber%5D\\=([0-9]+)&page%5Bsize%5D\\=([0-9]+)");
+                Matcher m = p.matcher(lastPage);
+                if(m.matches()) {
+                    returnValues[0] = Integer.parseInt(m.group(1));
+                    returnValues[1] = Integer.parseInt(m.group(2));
+                }
+            }
+        }
+
+        return returnValues;
+    }
+
+    private int sum;
+    boolean failed;
+    private void getComments(int pokemonId, int lastPageNum, int pageSize, CallbackInt callBack) {
+        PokemonService pokeService = ServiceCreator.getPokemonService();
+
+        List<Comment> comments = new ArrayList<>();
+        sum = lastPageNum * (lastPageNum + 1) / 2;
+        failed = false;
+        for(int i = 1; i <= lastPageNum; i++) {
+            Call<Comment[]> commentsCall = pokeService.getCommentsForPokemon(getAuthenticationString(), pokemonId, String.valueOf(i), String.valueOf(pageSize));
+            calls.add(commentsCall);
+
+            int finalI = i;
+            commentsCall.enqueue(new Callback<Comment[]>() {
+                @Override
+                public void onResponse(Call<Comment[]> call, Response<Comment[]> response) {
+                    calls.remove(call);
+                    if(response.isSuccessful()) {
+                        Comment[] responseComments = response.body();
+
+                        for(int j = 0; j < responseComments.length; j++) {
+                            comments.add(responseComments[j]);
+                        }
+
+                        sum -= finalI;
+                        if(sum == 0) {
+                            Comment[] commentsArray = comments.toArray(new Comment[comments.size()]);
+                            callBack.onSuccess(commentsArray);
+                        }
+                    } else {
+                        if(!failed) {
+                            failed = true;
+                            callBack.onFailure(ErrorHandler.getErrorResponse(response).toString());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Comment[]> call, Throwable t) {
+                    calls.remove(call);
+                    if(call.isCanceled()) {
+                        callBack.onCancel();
+                    } else {
+                        callBack.onFailure("Failure");
+                    }
+                }
+            });
+        }
+    }
+
+
+    public void getUserById(int userId, CallbackInt callBack) {
+
+        UserService service = ServiceCreator.getUserService();
+
+        Call<User> call = service.getUserById(getAuthenticationString(), userId);
+        calls.add(call);
+
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                calls.remove(call);
+                if(response.isSuccessful()) {
+                    callBack.onSuccess(response.body());
+                } else {
+                    callBack.onFailure(ErrorHandler.getErrorResponse(response).toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                calls.remove(call);
+                if(call.isCanceled()) {
+                    callBack.onCancel();
+                } else {
+                    callBack.onFailure("Failure");
+                }
+            }
+        });
+
+    }
+
+    public void postPokemonComment(int pokemonId, Comment comment, CallbackInt callBack) {
+        PokemonService pokeService = ServiceCreator.getPokemonService();
+
+        Call<Comment> call = pokeService.commentPokemon(getAuthenticationString(), pokemonId, comment);
+        calls.add(call);
+
+        call.enqueue(new Callback<Comment>() {
+            @Override
+            public void onResponse(Call<Comment> call, Response<Comment> response) {
+                calls.remove(call);
+                if(response.isSuccessful()) {
+                    callBack.onSuccess(response.body());
+                } else {
+                    callBack.onFailure(ErrorHandler.getErrorResponse(response).toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Comment> call, Throwable t) {
+                calls.remove(call);
+                if(call.isCanceled()) {
+                    callBack.onCancel();
+                } else {
+                    callBack.onFailure("Failure");
+                }
+            }
+        });
+    }
 }

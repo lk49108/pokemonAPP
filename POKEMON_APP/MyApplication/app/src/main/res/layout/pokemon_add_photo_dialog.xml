@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" 
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="27dp"
+    android:background="@color/colorWhite">
+    
+    <Button
+        android:id="@+id/pokemon_add_photo_dialog_button_take_photo"
+        android:textAlignment="viewStart"
+        android:layout_gravity="start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Take photo"
+        android:textColor="@color/addPokemonAlertDialogContentColor"
+        android:background="@color/colorWhite"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@color/addPokemonAlertDialogContentColor"/>
+
+
+    <Button
+        android:id="@+id/pokemon_add_photo_dialog_button_choose_photo"
+        android:textAlignment="viewStart"
+        android:layout_gravity="start"
+        android:textColor="@color/addPokemonAlertDialogContentColor"
+        android:background="@color/colorWhite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose photo"/>
+
+
+</LinearLayout>
