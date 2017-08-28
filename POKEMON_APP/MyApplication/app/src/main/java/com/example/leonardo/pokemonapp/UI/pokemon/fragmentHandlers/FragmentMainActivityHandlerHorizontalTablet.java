@@ -31,6 +31,8 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
         transaction.replace(activity.pokemonMainFragmentContainer.getId(), PokemonListFragment.newInstance(), "listFragment");
         transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), PokemonAddFragment.newInstance(), "addPokemonFragment");
         transaction.commit();
+
+        activity.switchHomeUpButton(true);
     }
 
     @Override
@@ -44,6 +46,7 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
             activity.getSupportFragmentManager().popBackStackImmediate();
             if (addPokemonFragment != null) {
                 transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), addPokemonFragment, "addPokemonFragment");
+                activity.switchHomeUpButton(true);
             } else if(pokemonCommentsFragment != null) {
                 activity.getSupportFragmentManager().popBackStackImmediate();
                 transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), pokemonDetailsFragment, "pokemonDetailsFragment");
@@ -52,11 +55,14 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
                 transaction = activity.getSupportFragmentManager().beginTransaction();
                 transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), pokemonCommentsFragment, "pokemonDetailsFragment");
                 transaction.addToBackStack("CommentsFragment on DetailsFragment");
+                activity.switchHomeUpButton(false);
             } else {
                 transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), pokemonDetailsFragment, "pokemonDetailsFragment");
+                activity.switchHomeUpButton(true);
             }
         } else {
             transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), PokemonAddFragment.newInstance(), "addPokemonFragment");
+            activity.switchHomeUpButton(true);
         }
         transaction.commit();
 
@@ -68,6 +74,7 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
         transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), PokemonAddFragment.newInstance(), "addPokemonFragment");
         transaction.commit();
+        activity.switchHomeUpButton(true);
         activity.invalidateOptionsMenu();
     }
 
@@ -76,6 +83,7 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
         transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), PokemonDetailsFragment.newInstance(pokemon), "pokemonDetailsFragment");
         transaction.commit();
+        activity.switchHomeUpButton(true);
         activity.invalidateOptionsMenu();
     }
 
@@ -89,6 +97,7 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), PokemonDetailsFragment.newInstance(pokemon), "pokemonDetailsFragment");
         transaction.commit();
+        activity.switchHomeUpButton(true);
 
         activity.invalidateOptionsMenu();
     }
@@ -97,6 +106,7 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
     public void pokemonCreationCanceled() {
         FragmentManager manager = activity.getSupportFragmentManager();
         manager.beginTransaction().replace(activity.pokemonAddDetailFragmentContainer.getId(), PokemonAddFragment.newInstance(), "addPokemonFragment");
+        activity.switchHomeUpButton(true);
         activity.invalidateOptionsMenu();
     }
 
@@ -112,6 +122,7 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
             activity.getSupportFragmentManager().popBackStackImmediate();
             return true;
         }
+        activity.switchHomeUpButton(true);
 
         return false;
     }
@@ -122,6 +133,7 @@ public class FragmentMainActivityHandlerHorizontalTablet implements FragmentMain
         transaction.replace(activity.pokemonAddDetailFragmentContainer.getId(), PokemonCommentsFragment.newInstance(comments, pokemonName), "pokemonCommentsFragment");
         transaction.addToBackStack("CommentsFragment on DetailsFragment");
         transaction.commit();
+        activity.switchHomeUpButton(false);
     }
 
 }
